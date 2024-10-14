@@ -1,116 +1,98 @@
-const db = require('../db');
+const pool = require('../db'); // Asumiendo que tienes un pool de conexión a la base de datos PostgreSQL
 
+// Registrar la asistencia de un estudiante
 const registerAttendance = async (req, res) => {
-  const { user_code, lab_code } = req.body;
-  const att_time = new Date();
+  const { lab_id } = req.body;
+  const user_id = req.user.user_id;
 
   try {
-    const result = await db.query(
-      'INSERT INTO attendance (att_time, user_code, lab_code) VALUES ($1, $2, $3) RETURNING *',
-      [att_time, user_code, lab_code]
+    // Verificar si el estudiante ya tiene una asistencia activa en el laboratorio
+    const activeAttendance = await pool.query(
+      'SELECT * FROM attendance WHERE user_id = $1 AND lab_id = $2 AND att_end_time IS NULL',
+      [user_id, lab_id]
     );
-    res.status(201).json({ message: 'Attendance registered successfully', attendance: result.rows[0] });
+
+    if (activeAttendance.rows.length > 0) {
+      return res.status(400).json({ msg: 'Ya tienes una asistencia activa en este laboratorio' });
+    }
+
+    // Registrar nueva asistencia
+    const newAttendance = await pool.query(
+      'INSERT INTO attendance (user_id, lab_id) VALUES ($1, $2) RETURNING *',
+      [user_id, lab_id]
+    );
+
+    res.status(201).json(newAttendance.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error registering attendance' });
+    console.error(error.message);
+    res.status(500).json({ msg: 'Error al registrar la asistencia' });
   }
 };
 
+// Finalizar la asistencia de un estudiante
 const endAttendance = async (req, res) => {
-  const { user_code } = req.params;
-  const att_end_time = new Date();
+  const { att_id } = req.params;
+  const user_id = req.user.user_id;
 
   try {
-    // Verificar si el usuario pertenece a un grupo
-    const groupResult = await db.query(
-      `SELECT g.group_id FROM group_members gm
-       JOIN attendance_group g ON gm.group_id = g.group_id
-       WHERE gm.user_code = $1`, 
-      [user_code]
+    // Verificar si la asistencia está activa
+    const attendance = await pool.query(
+      'SELECT * FROM attendance WHERE att_id = $1 AND user_id = $2 AND att_end_time IS NULL',
+      [att_id, user_id]
     );
 
-    if (groupResult.rows.length > 0) {
-      const group_id = groupResult.rows[0].group_id;
-
-      // Terminar la asistencia para todos los miembros del grupo
-      const result = await db.query(
-        `UPDATE attendance SET att_end_time = $1 
-         WHERE user_code IN (SELECT user_code FROM group_members WHERE group_id = $2) 
-         AND att_end_time IS NULL RETURNING *`,
-        [att_end_time, group_id]
-      );
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ message: 'No active attendance found for the group members' });
-      }
-
-      res.status(200).json({ message: 'Attendance ended successfully for the group', attendance: result.rows });
-    } else {
-      // Si el usuario no está en un grupo, terminar su asistencia individualmente
-      const result = await db.query(
-        'UPDATE attendance SET att_end_time = $1 WHERE user_code = $2 AND att_end_time IS NULL RETURNING *',
-        [att_end_time, user_code]
-      );
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ message: 'No active attendance found for the user' });
-      }
-
-      res.status(200).json({ message: 'Attendance ended successfully', attendance: result.rows[0] });
+    if (attendance.rows.length === 0) {
+      return res.status(404).json({ msg: 'No se encontró una asistencia activa' });
     }
+
+    // Finalizar la asistencia
+    const updatedAttendance = await pool.query(
+      'UPDATE attendance SET att_end_time = NOW() WHERE att_id = $1 RETURNING *',
+      [att_id]
+    );
+
+    res.status(200).json(updatedAttendance.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error ending attendance' });
+    console.error(error.message);
+    res.status(500).json({ msg: 'Error al finalizar la asistencia' });
   }
 };
 
-const getAttendances = async (req, res) => {
-  const limit = parseInt(req.query.limit) || 20;
-  const offset = parseInt(req.query.offset) || 0;
-
+// Obtener todas las asistencias (solo administradores)
+const getAllAttendances = async (req, res) => {
   try {
-    const result = await db.query(`
-      SELECT attendance.att_time, attendance.att_end_time, attendance.lab_code, dep_user.user_name, dep_user.user_surname, lab.lab_name
-      FROM attendance
-      JOIN dep_user ON attendance.user_code = dep_user.user_code
-      JOIN lab ON attendance.lab_code = lab.lab_code
-      ORDER BY attendance.att_time DESC
-      LIMIT $1 OFFSET $2
-    `, [limit, offset]);
-    res.json(result.rows);
+    const allAttendances = await pool.query('SELECT * FROM attendance');
+    res.status(200).json(allAttendances.rows);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching attendances' });
+    console.error(error.message);
+    res.status(500).json({ msg: 'Error al obtener las asistencias' });
   }
 };
 
-const getActiveAttendance = async (req, res) => {
-  const { user_code } = req.params;
-  
+// Obtener la asistencia activa de un usuario específico
+const getAttendanceByUser = async (req, res) => {
+  const { user_id } = req.params;
+
   try {
-    const result = await db.query(
-      `SELECT a.*, l.lab_name 
-       FROM attendance a 
-       JOIN lab l ON a.lab_code = l.lab_code 
-       WHERE a.user_code = $1 AND a.att_end_time IS NULL`, 
-      [user_code]
+    const activeAttendance = await pool.query(
+      'SELECT * FROM attendance WHERE user_id = $1 AND att_end_time IS NULL',
+      [user_id]
     );
 
-    if (result.rows.length > 0) {
-      res.status(200).json({ active: true, lab_name: result.rows[0].lab_name });
-      console.log("Pending Attendance in lab: " + result.rows[0].lab_name);
-    } else {
-      res.status(200).json({ active: false });
+    if (activeAttendance.rows.length === 0) {
+      return res.status(404).json({ msg: 'No hay asistencias activas para este usuario' });
     }
+
+    res.status(200).json(activeAttendance.rows[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching active attendance' });
+    console.error(error.message);
+    res.status(500).json({ msg: 'Error al obtener la asistencia del usuario' });
   }
 };
 
 module.exports = {
   registerAttendance,
   endAttendance,
-  getAttendances,
-  getActiveAttendance,
+  getAllAttendances,
+  getAttendanceByUser
 };
