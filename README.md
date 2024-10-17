@@ -3,7 +3,6 @@
 ## Tabla de Contenidos
 - [Descripción del Proyecto](#descripción)
 - [Configuración del Entorno](#configuración-del-entorno)
-- [Buenas Prácticas en Git y GitHub](#buenas-prácticas-en-git-y-github)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Licencia](#licencia)
 
@@ -46,9 +45,6 @@ En este proyecto se han utilizado las siguientes tecnologías:
 
 ## Configuración del Entorno
 Para configurar el entorno de desarrollo, sigue las instrucciones en [environment_setup.md](./docs/environment_setup.md).
-
-## Buenas Prácticas en Git y GitHub
-Durante el desarrollo del proyecto, seguimos una serie de buenas prácticas de Git y GitHub. Para más detalles, consulta [git.md](./docs/git.md).
 
 ## Licencia
 Este proyecto utiliza la licencia [MIT](./LICENSE).
