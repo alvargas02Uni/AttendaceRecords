@@ -16,4 +16,4 @@ const adminAuthMiddleware = (req, res, next) => {
   next();
 };
 
-module.exports = { unifiedAuthMiddleware, studentAuthMiddleware, adminAuthMiddleware };
+module.exports = { studentAuthMiddleware, adminAuthMiddleware };

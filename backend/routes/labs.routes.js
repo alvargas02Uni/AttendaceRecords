@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getAllLabs, getLabById, createLab, updateLab, deleteLab, followLab, unfollowLab, getLabFollowersCount } = require('../controllers/labs.controller');
+const { getAllLabs, getLabById, createLab, updateLab, deleteLab } = require('../controllers/labs.controller');
 const { studentAuthMiddleware, adminAuthMiddleware } = require('../util/authMiddleware');
 const router = Router();
 
