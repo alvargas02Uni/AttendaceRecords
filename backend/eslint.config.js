@@ -1,6 +1,6 @@
-import { Linter } from "eslint";
+const { Linter } = require("eslint");
 
-export default [
+module.exports = [
   {
     files: ["**/*.js"],
     languageOptions: {
