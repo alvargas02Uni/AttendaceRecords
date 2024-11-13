@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField } from '@mui/material';
 import { useAuth } from '../../../common/authContext';
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const LoginForm = ({ setErrorMessage, setOpenError }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -33,7 +35,7 @@ const LoginForm = ({ setErrorMessage, setOpenError }) => {
     e.preventDefault();
     if (!errors.user_email && !errors.user_password) {
       try {
-        const response = await fetch('https://localhost:5000/auth/login', {
+        const response = await fetch(`${BASE_URL}/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

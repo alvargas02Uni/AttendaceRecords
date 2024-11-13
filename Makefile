@@ -26,14 +26,15 @@ lint: lint-backend lint-frontend
 build-frontend:
 	npm run build --prefix frontend
 
-# Iniciar y detener la base de datos usando Docker Compose
+# Iniciar la base de datos en Docker
 db-start:
-	docker-compose -f backend/docker-compose.yml up -d db
+	npm run db:start --prefix backend
 
+# Detener la base de datos en Docker
 db-stop:
-	docker-compose -f backend/docker-compose.yml down
+	npm run db:stop --prefix backend
 
-# Ejecutar toda la configuración de desarrollo (iniciar base de datos y servicios)
+# Ejecutar entorno de desarrollo completo
 start: db-start
 	npm run dev --prefix backend &
 	npm run start --prefix frontend

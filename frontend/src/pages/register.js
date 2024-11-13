@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Container, TextField, Typography, Snackbar, Alert, CircularProgress } from '@mui/material';
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const Register = () => {
   const [formData, setFormData] = useState({
     user_name: '',
@@ -57,7 +59,7 @@ const Register = () => {
     if (Object.values(errors).every((error) => error === '')) {
       try {
         setLoading(true);
-        await axios.post('https://localhost:5000/auth/register', formData);
+        await axios.post(`${BASE_URL}/auth/register`, formData);
         
         setSuccessMessage('Registration successful!');
         setOpen(true);

@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  backend-tests:
     runs-on: ubuntu-latest
 
     services:
@@ -24,8 +24,8 @@ jobs:
           --health-retries=5
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: AttendanceRecords_db
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
 
     steps:
       - name: Check out repository
@@ -43,10 +43,6 @@ jobs:
         working-directory: ./backend
         run: npm install
 
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: npm install
-
       - name: Run Backend Linter
         working-directory: ./backend
         run: npm run lint
@@ -58,6 +54,22 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: test_db
         run: npm run test
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
 
       - name: Run Frontend Linter
         working-directory: ./frontend

@@ -4,6 +4,8 @@ import { useAuth } from '../../common/authContext';
 import LabList from './components/labsList';
 import { registerAttendance, endAttendance } from './components/attendanceServices';
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const AttendanceRegister = () => {
   const { user } = useAuth();
   const [labs, setLabs] = useState([]);
@@ -13,7 +15,7 @@ const AttendanceRegister = () => {
   useEffect(() => {
     const fetchLabs = async () => {
       try {
-        const response = await fetch('https://localhost:5000/labs', {
+        const response = await fetch(`${BASE_URL}/labs`, {
           headers: {
             'Authorization': `Bearer ${user?.token}`,
           },

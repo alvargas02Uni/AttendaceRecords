@@ -1,6 +1,8 @@
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 export const registerAttendance = async (labId, user) => {
     try {
-      const response = await fetch(`https://localhost:5000/attendance/register`, {
+      const response = await fetch(`${BASE_URL}/attendance/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -17,7 +19,7 @@ export const registerAttendance = async (labId, user) => {
   
 export const endAttendance = async (labId, user) => {
     try {
-      const response = await fetch(`https://localhost:5000/attendance/end`, {
+      const response = await fetch(`${BASE_URL}/attendance/end`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

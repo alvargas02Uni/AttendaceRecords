@@ -220,7 +220,7 @@ Ejecución de Tests del Frontend:
 Para el frontend, he añadido --watchAll=false al comando de tests para asegurarse de que las pruebas no se ejecuten en modo watch, que podría causar problemas en un entorno de CI/CD.
 Uso de Variables de Entorno:
 
-Se utiliza DATABASE_URL para el backend, asegurando que los tests se ejecuten en la base de datos creada específicamente para la integración continua.
+Se utiliza DATA${BASE_URL} para el backend, asegurando que los tests se ejecuten en la base de datos creada específicamente para la integración continua.
 Con este flujo de trabajo en GitHub Actions, puedes garantizar que cada push o pull request en la rama main pase por una batería completa de pruebas y linting, lo que mejorará la calidad del código y asegurará la estabilidad del proyecto antes del despliegue.
 
 Tareas con Makefile:
