@@ -1,4 +1,4 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
@@ -9,16 +9,12 @@ on:
       - main
 
 jobs:
-  backend-tests:
+  build-and-test:
     runs-on: ubuntu-latest
 
     services:
       postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: testdb
+        image: postgres:13
         ports:
           - 5432:5432
         options: >-
@@ -28,23 +24,41 @@ jobs:
           --health-retries=5
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out repository
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Copy .env file
+        run: cp backend/config/.env backend/.env
+
+      - name: Install backend dependencies
         working-directory: ./backend
         run: npm install
 
-      - name: Run linter
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Run Backend Linter
         working-directory: ./backend
         run: npm run lint
 
-      - name: Run tests
+      - name: Run Backend Tests
         working-directory: ./backend
         env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/testdb
-        run: npm test
+          POSTGRES_USER: $(grep POSTGRES_USER backend/.env | cut -d '=' -f2)
+          POSTGRES_PASSWORD: $(grep POSTGRES_PASSWORD backend/.env | cut -d '=' -f2)
+          POSTGRES_DB: $(grep POSTGRES_DB backend/.env | cut -d '=' -f2)
+        run: npm run test
+
+      - name: Run Frontend Linter
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend
+        run: npm run test
