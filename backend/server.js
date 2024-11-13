@@ -1,8 +1,10 @@
+// Archivo: server.js
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+require('dotenv').config({ path: './config/.env' });
 
 const attendanceRouter = require('./src/routes/attendance.routes');
 const labsRouter = require('./src/routes/labs.routes');
@@ -28,19 +30,30 @@ app.use(limiter);
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Ruta de bienvenida
 app.get('/', (req, res) => {
     res.send('Welcome to the Attendance Records API');
 });
 
-app.use('/attendance', attendanceRouter);
-app.use('/labs', labsRouter);
-app.use('/user', userRouter);
-app.use('/admin', adminRouter);
+// Conectar los routers con el prefijo /api
+app.use('/api/attendance', attendanceRouter);
+app.use('/api/labs', labsRouter);
+app.use('/api/users', userRouter);
+app.use('/api/admin', adminRouter);
 
+// Manejo de errores
 app.use((err, req, res, next) => {
     return res.status(500).json({
         message: err.message
     });
 });
+
+// Solo iniciar el servidor si no estamos en el entorno de prueba
+if (process.env.NODE_ENV !== 'test') {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
 module.exports = app;

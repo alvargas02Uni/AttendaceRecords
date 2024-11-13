@@ -1,41 +1,39 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const pool = require('../../config/db'); // Asumiendo que tienes un pool de conexión a la base de datos PostgreSQL
+const pool = require('../../config/db');
 const { validationResult } = require('express-validator');
+const generateToken = require('../util/generateToken');
 
-// Función para generar tokens JWT para administradores
-const generateAdminToken = (admin) => {
-  return jwt.sign({ admin_id: admin.admin_id, email: admin.admin_email, isAdmin: true }, process.env.JWT_SECRET, { expiresIn: '1h' });
-};
-
+// Registro de administrador
 // Registro de administrador
 const registerAdmin = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ msg: 'Invalid input', errors: errors.array() });
   }
 
   const { admin_name, admin_surname, admin_email, admin_password } = req.body;
 
+  // Validar formato de email
+  if (!/^\S+@\S+\.\S+$/.test(admin_email)) {
+    return res.status(400).json({ msg: 'Invalid input' });
+  }
+
   try {
     // Verificar si el administrador ya existe
-    const existingAdmin = await pool.query('SELECT * FROM dep_admin WHERE admin_email = $1', [admin_email]);
-    if (existingAdmin.rows.length > 0) {
+    const { rows } = await pool.query('SELECT * FROM dep_admin WHERE admin_email = $1', [admin_email]);
+    if (rows.length > 0) {
       return res.status(400).json({ msg: 'El administrador ya existe' });
     }
 
-    // Hashear la contraseña
+    // Hashear la contraseña e insertar nuevo administrador
     const hashedPassword = await bcrypt.hash(admin_password, 10);
-
-    // Insertar nuevo administrador
     const newAdmin = await pool.query(
       'INSERT INTO dep_admin (admin_name, admin_surname, admin_email, admin_password) VALUES ($1, $2, $3, $4) RETURNING *',
       [admin_name, admin_surname, admin_email, hashedPassword]
     );
 
-    // Generar token JWT
-    const token = generateAdminToken(newAdmin.rows[0]);
-
+    // Generar y enviar token JWT
+    const token = generateToken({ ...newAdmin.rows[0], isAdmin: true });
     return res.status(201).json({ token });
   } catch (error) {
     console.error(error.message);
@@ -49,20 +47,19 @@ const loginAdmin = async (req, res) => {
 
   try {
     // Verificar si el administrador existe
-    const admin = await pool.query('SELECT * FROM dep_admin WHERE admin_email = $1', [admin_email]);
-    if (admin.rows.length === 0) {
+    const { rows } = await pool.query('SELECT * FROM dep_admin WHERE admin_email = $1', [admin_email]);
+    if (rows.length === 0) {
       return res.status(400).json({ msg: 'Credenciales inválidas' });
     }
 
-    // Comparar las contraseñas
-    const isMatch = await bcrypt.compare(admin_password, admin.rows[0].admin_password);
+    // Comparar la contraseña
+    const isMatch = await bcrypt.compare(admin_password, rows[0].admin_password);
     if (!isMatch) {
       return res.status(400).json({ msg: 'Credenciales inválidas' });
     }
 
-    // Generar token JWT
-    const token = generateAdminToken(admin.rows[0]);
-
+    // Generar y enviar token JWT
+    const token = generateToken({ ...rows[0], isAdmin: true });
     return res.status(200).json({ token });
   } catch (error) {
     console.error(error.message);
@@ -74,32 +71,56 @@ const loginAdmin = async (req, res) => {
 const getAllAdmins = async (req, res) => {
   try {
     const admins = await pool.query('SELECT * FROM dep_admin');
-    return res.status(200).json(admins.rows);
+    const adminData = admins.rows.map(admin => {
+      const { admin_password, ...adminInfo } = admin;
+      return adminInfo;
+    });
+    return res.status(200).json(adminData);
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ msg: 'Error en el servidor' });
   }
 };
 
-// Actualizar información de un administrador
+// Actualizar información de un administrador con validación
 const updateAdmin = async (req, res) => {
+  // Validación directa en el controlador
   const { admin_name, admin_surname, admin_email, admin_password } = req.body;
 
-  try {
-    // Hashear la nueva contraseña si se proporciona
-    const hashedPassword = admin_password ? await bcrypt.hash(admin_password, 10) : undefined;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ msg: 'Invalid input', errors: errors.array() });
+  }
 
-    const updatedAdmin = await pool.query(
+  try {
+    const hashedPassword = admin_password ? await bcrypt.hash(admin_password, 10) : undefined;
+    
+    // Aquí las validaciones específicas que necesitas (más sencillas)
+    if (admin_email && !/^\S+@\S+\.\S+$/.test(admin_email)) {
+      return res.status(400).json({ msg: 'Invalid input' });  // Cambié el mensaje a 'Invalid input'
+    }
+
+    if (admin_password && admin_password.length < 6) {
+      return res.status(400).json({ msg: 'Invalid input' });  // Cambié el mensaje a 'Invalid input'
+    }
+
+    const { rows } = await pool.query(
       `UPDATE dep_admin SET
-      admin_name = $1,
-      admin_surname = $2,
-      admin_email = $3,
-      admin_password = COALESCE($4, admin_password)
-      WHERE admin_id = $5 RETURNING *`,
+        admin_name = $1,
+        admin_surname = $2,
+        admin_email = $3,
+        admin_password = COALESCE($4, admin_password)
+        WHERE admin_id = $5 RETURNING *`,
       [admin_name, admin_surname, admin_email, hashedPassword, req.params.id]
     );
 
-    return res.status(200).json(updatedAdmin.rows[0]);
+    if (rows.length === 0) {
+      return res.status(404).json({ msg: 'Administrador no encontrado' });
+    }
+
+    // Excluir la contraseña del perfil de administrador actualizado
+    const { admin_password: _, ...adminData } = rows[0];
+    return res.status(200).json(adminData);
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ msg: 'Error en el servidor' });

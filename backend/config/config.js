@@ -1,3 +1,4 @@
+// Archivo: backend/config/config.js
 const { config } = require('dotenv');
 config();
 
@@ -7,6 +8,7 @@ module.exports = {
     password: process.env.POSTGRES_PASSWORD,
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
-    database: process.env.POSTGRES_DB, 
-  }
+    database: process.env.POSTGRES_DB,
+  },
+  jwtSecret: process.env.JWT_SECRET,
 };

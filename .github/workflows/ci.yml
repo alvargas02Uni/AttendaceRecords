@@ -23,6 +23,11 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: test_db
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -50,9 +55,7 @@ jobs:
       - name: Run Backend Tests
         working-directory: ./backend
         env:
-          POSTGRES_USER: $(grep POSTGRES_USER backend/.env | cut -d '=' -f2)
-          POSTGRES_PASSWORD: $(grep POSTGRES_PASSWORD backend/.env | cut -d '=' -f2)
-          POSTGRES_DB: $(grep POSTGRES_DB backend/.env | cut -d '=' -f2)
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         run: npm run test
 
       - name: Run Frontend Linter
