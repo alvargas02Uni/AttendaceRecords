@@ -1,0 +1,50 @@
+name: AttendanceRecords
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile.backend
+    ports:
+      - '5000:5000'
+    env_file:
+      - ./backend/config/.env
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/src/app
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+    networks:
+      - attendancenet
+
+  db:
+    build:
+      context: ./database
+      dockerfile: ./docker/Dockerfile.db
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/postgresql/data
+    env_file:
+      - ./backend/config/.env
+    networks:
+      - attendancenet
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./docker/Dockerfile.frontend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    networks:
+      - attendancenet
+
+volumes:
+  pgdata:
+
+networks:
+  attendancenet:
