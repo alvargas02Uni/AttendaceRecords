@@ -260,7 +260,7 @@ jobs:
 
 ## 5. Implementación y Ejecución de Tests
 
-Se han implementado pruebas exhaustivas para validar aspectos clave de la lógica de negocio, cubriendo las funcionalidades esenciales y asegurando que el sistema responde correctamente en casos de uso normales y excepcionales.
+He implementado test para validar aspectos clave de la lógica de negocio, cubriendo las funcionalidades esenciales y asegurando que el sistema responde correctamente en casos de uso normales y excepcionales.
 
 ### Backend
 
@@ -289,14 +289,14 @@ Las pruebas de frontend aseguran que los componentes React se rendericen correct
 
 - **`App` Component**:
   - **Prueba de Bienvenida**: Verifica que el mensaje de bienvenida "Welcome to the Attendance Management System" se muestra correctamente en la pantalla de inicio, asegurando que la interfaz se carga como se espera.
-- **`Dashboard` Tests (`dashboard.test.js`)**:
-  - **`AttendanceRecords` Component**: 
+- **Dashboard Tests (`dashboard.test.js`)**:
+  - **AttendanceRecords Component**: 
     - **Renderización de Registros**: Comprueba que los registros de asistencia se muestran correctamente con datos de ejemplo, incluyendo el nombre del estudiante, el laboratorio y la hora de inicio y fin.
     - **Indicador de Carga**: Valida que, cuando `loading` es `true`, se muestre un indicador de carga (spinner) para informar al usuario que los datos están en proceso de carga.
-  - **`UserStatistics` Component**:
+  - **UserStatistics Component**:
     - **Estadísticas de Usuarios**: Verifica que el componente muestra correctamente las estadísticas del usuario, tales como el total de usuarios, la edad promedio y la distribución de género. Estas pruebas aseguran que la información relevante esté visible y organizada en la interfaz.
 
-- **`Login` Component (`login.test.js`)**:
+- **Login Component (`login.test.js`)**:
   - **Formulario de Inicio de Sesión**:
     - **Prueba de Envío de Formulario**: Simula el llenado del formulario de login y verifica que, al enviar los datos, la aplicación realiza la solicitud correcta para autenticar al usuario. Esta prueba garantiza que el flujo de autenticación funcione correctamente y que la API de login sea llamada con los datos correctos.
     - **Manejo de Errores**: Prueba el escenario en el que las credenciales son incorrectas, simulando una respuesta de error de la API y verificando que se muestre un mensaje de error adecuado en la interfaz ("Incorrect password"). Esto asegura que el usuario recibe retroalimentación clara cuando se produce un error en el inicio de sesión.
