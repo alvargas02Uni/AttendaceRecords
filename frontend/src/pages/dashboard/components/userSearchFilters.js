@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { Box, TextField, FormControl, InputLabel, Select, MenuItem, Paper, Table, TableHead, TableRow, TableCell, TableBody, Card, Typography } from '@mui/material';
 
 const UserSearchFilters = ({ users, filteredUsers, setFilteredUsers }) => {
@@ -46,11 +46,14 @@ const UserSearchFilters = ({ users, filteredUsers, setFilteredUsers }) => {
         </Box>
         <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
           <FormControl fullWidth>
-            <InputLabel>Gender</InputLabel>
+            <InputLabel id="gender-label">Gender</InputLabel>
             <Select
+              labelId="gender-label"
+              id="gender-select"
               value={genderFilter}
               onChange={handleGenderChange}
               label="Gender"
+              aria-labelledby="gender-label"
             >
               <MenuItem value="">All</MenuItem>
               <MenuItem value="Male">Male</MenuItem>
@@ -58,11 +61,14 @@ const UserSearchFilters = ({ users, filteredUsers, setFilteredUsers }) => {
             </Select>
           </FormControl>
           <FormControl fullWidth>
-            <InputLabel>Degree</InputLabel>
+            <InputLabel id="degree-label">Degree</InputLabel>
             <Select
+              labelId="degree-label"
+              id="degree-select"
               value={degreeFilter}
               onChange={handleDegreeChange}
               label="Degree"
+              aria-labelledby="degree-label"
             >
               <MenuItem value="">All</MenuItem>
               {[...new Set(users.map(user => user.user_degree))].map(degree => (
@@ -84,7 +90,7 @@ const UserSearchFilters = ({ users, filteredUsers, setFilteredUsers }) => {
             </TableHead>
             <TableBody>
               {filteredUsers.map(user => (
-                <TableRow key={user.user_id}>
+                <TableRow key={user.user_id || `${user.user_name}-${user.user_surname}`}>
                   <TableCell>{user.user_name} {user.user_surname}</TableCell>
                   <TableCell>{user.user_email}</TableCell>
                   <TableCell>{user.user_degree}</TableCell>

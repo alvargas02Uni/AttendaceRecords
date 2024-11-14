@@ -9,6 +9,16 @@ jest.mock('../common/authContext', () => ({
   }),
 }));
 
+beforeAll(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  console.error.mockRestore();
+  console.warn.mockRestore();
+});
+
 describe('Login Component', () => {
   test('renders login form and submits successfully', async () => {
     render(

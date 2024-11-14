@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Box, Typography, Grid } from '@mui/material';
+import { Card, Box, Typography, Grid2 } from '@mui/material';
 
 const UserStatistics = ({ statistics, totalUsers }) => {
   const { averageAge, genderDistribution } = statistics;
@@ -10,8 +10,8 @@ const UserStatistics = ({ statistics, totalUsers }) => {
         User Statistics
       </Typography>
       <Card sx={{ borderColor: '#d82626', borderWidth: 2, borderStyle: 'solid', p: 3, mb: 5 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
+        <Grid2 container spacing={2}>
+          <Grid2 item xs={12} sm={4}>
             <Box sx={{ backgroundColor: '#ff6666', padding: 2, borderRadius: 1, minWidth: '200px' }}>
               <Typography variant="h6" sx={{ color: '#ffffff' }}>
                 Total Users
@@ -20,8 +20,8 @@ const UserStatistics = ({ statistics, totalUsers }) => {
                 {totalUsers}
               </Typography>
             </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </Grid2>
+          <Grid2 item xs={12} sm={4}>
             <Box sx={{ backgroundColor: '#ff6666', padding: 2, borderRadius: 1, minWidth: '200px' }}>
               <Typography variant="h6" sx={{ color: '#ffffff' }}>
                 Average Age
@@ -30,8 +30,8 @@ const UserStatistics = ({ statistics, totalUsers }) => {
                 {averageAge} years
               </Typography>
             </Box>
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          </Grid2>
+          <Grid2 item xs={12} sm={4}>
             <Box sx={{ backgroundColor: '#ff6666', padding: 2, borderRadius: 1, minWidth: '200px' }}>
               <Typography variant="h6" sx={{ color: '#ffffff' }}>
                 Gender Distribution
@@ -46,8 +46,8 @@ const UserStatistics = ({ statistics, totalUsers }) => {
                 Non-binary: {genderDistribution.non_binary || 0} ({((genderDistribution.non_binary / totalUsers) * 100).toFixed(2)}%)
               </Typography>
             </Box>
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Card>
     </>
   );
