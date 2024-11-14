@@ -2,11 +2,10 @@
 
 ## Índice
 1. [Elección y Configuración del Gestor de Tareas](#elección-y-configuración-del-gestor-de-tareas)
-2. [Elección de la Biblioteca de Aserciones](#elección-de-la-biblioteca-de-aserciones)
-3. [Elección del Test Runner](#elección-del-test-runner)
-4. [Integración de Pruebas con Herramientas de Construcción del Proyecto](#integración-de-pruebas-con-herramientas-de-construcción-del-proyecto)
-5. [Sistema Online de Pruebas e Integración Continua](#sistema-online-de-pruebas-e-integración-continua)
-6. [Implementación y Ejecución de Tests](#implementación-y-ejecución-de-tests)
+2. [Elección de la Biblioteca de Aserciones y Test Runner](#elección-de-la-biblioteca-de-aserciones-y-test-runner)
+3. [Integración de Pruebas con Herramientas de Construcción del Proyecto](#integración-de-pruebas-con-herramientas-de-construcción-del-proyecto)
+4. [Sistema Online de Pruebas e Integración Continua](#sistema-online-de-pruebas-e-integración-continua)
+5. [Implementación y Ejecución de Tests](#implementación-y-ejecución-de-tests)
 
 ---
 
@@ -86,7 +85,7 @@ La configuración de Jest se ha realizado en los archivos `package.json` del bac
 
 ---
 
-## 4. Integración de Pruebas con Herramientas de Construcción del Proyecto
+## 3. Integración de Pruebas con Herramientas de Construcción del Proyecto
 
 Para estandarizar y simplificar la ejecución de tareas en el proyecto, se ha configurado un archivo `Makefile` que centraliza los comandos comunes, como pruebas, linting, compilación y gestión de la base de datos. Esto permite al entorno de CI ejecutar estas tareas de manera consistente y rápida, sin tener que recordar múltiples comandos.
 
@@ -144,7 +143,7 @@ stop: db-stop
 
 ---
 
-## 5. Sistema Online de Pruebas e Integración Continua
+## 4. Sistema Online de Pruebas e Integración Continua
 
 **Herramienta Elegida**: GitHub Actions
 
@@ -259,7 +258,7 @@ jobs:
 
 ---
 
-## 6. Implementación y Ejecución de Tests
+## 5. Implementación y Ejecución de Tests
 
 Se han implementado pruebas exhaustivas para validar aspectos clave de la lógica de negocio, cubriendo las funcionalidades esenciales y asegurando que el sistema responde correctamente en casos de uso normales y excepcionales.
 
