@@ -22,12 +22,6 @@ coverage/
 **/lcov-report/
 **/lcov.info
 
-# Docker artifacts
-**/Dockerfile.*
-docker-compose.yml
-docker/
-*.tar
-
 # Build directories and generated files
 build/
 dist/
@@ -61,7 +55,3 @@ Thumbs.db
 .eslintconfig
 .eslintignore
 .prettierignore
-
-# Jest and testing artifacts
-jest.setup.js
-**/__tests__/*test.js.snap
