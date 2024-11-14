@@ -4,15 +4,15 @@ services:
       context: ./database
       dockerfile: docker/Dockerfile.db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
       - attendancerecords-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,12 +22,12 @@ services:
       context: ./backend
       dockerfile: docker/Dockerfile.backend
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
       POSTGRES_HOST: db
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      JWT_SECRET: ${JWT_SECRET}
+      POSTGRES_PORT: $POSTGRES_PORT
+      JWT_SECRET: $JWT_SECRET
       PORT: 5000   
     depends_on:
       db:
@@ -48,7 +48,6 @@ services:
       - attendancerecords-network
     ports:
       - "3000:3000"
-
 
 volumes:
   db-data:

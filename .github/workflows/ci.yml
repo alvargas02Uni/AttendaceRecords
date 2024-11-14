@@ -1,22 +1,14 @@
-name: CI Pipeline
+name: CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
+      db:
+        image: postgres:latest
         options: >-
           --health-cmd="pg_isready -U postgres"
           --health-interval=10s
@@ -26,6 +18,8 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
 
     steps:
       - name: Check out repository
@@ -35,9 +29,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
-      - name: Copy .env file
-        run: cp backend/config/.env backend/.env
 
       - name: Install backend dependencies
         working-directory: ./backend
@@ -50,9 +41,11 @@ jobs:
       - name: Run Backend Tests
         working-directory: ./backend
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          POSTGRES_HOST: localhost
         run: npm run test
 
   frontend-tests:
