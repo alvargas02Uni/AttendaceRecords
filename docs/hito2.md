@@ -1,258 +1,305 @@
-1. Elección y Configuración del Gestor de Tareas (1.5 puntos)
-Optaría por usar npm scripts como gestor de tareas para el proyecto. Esto se debe a que el proyecto ya está utilizando Node.js en el backend y el frontend, por lo que npm se adapta perfectamente para integrar la ejecución de pruebas, construcción, y otros procesos.
+# Integración Continua
 
-Configuración:
+## Índice
+1. [Elección y Configuración del Gestor de Tareas](#elección-y-configuración-del-gestor-de-tareas)
+2. [Elección de la Biblioteca de Aserciones](#elección-de-la-biblioteca-de-aserciones)
+3. [Elección del Test Runner](#elección-del-test-runner)
+4. [Integración de Pruebas con Herramientas de Construcción del Proyecto](#integración-de-pruebas-con-herramientas-de-construcción-del-proyecto)
+5. [Sistema Online de Pruebas e Integración Continua](#sistema-online-de-pruebas-e-integración-continua)
+6. [Implementación y Ejecución de Tests](#implementación-y-ejecución-de-tests)
 
-En el archivo package.json del backend y del frontend, añadiría scripts específicos para ejecutar las pruebas y otras tareas comunes.
+---
 
-Justificación: Elegir npm facilita la integración de tareas debido a que ya es parte del entorno del proyecto, lo cual minimiza la configuración adicional y reduce la curva de aprendizaje para cualquier colaborador que esté familiarizado con el entorno de Node.js.
+## 1. Elección y Configuración del Gestor de Tareas
 
-Backend - /backend/package.json
-Añadiré algunos scripts adicionales para mejorar el flujo de trabajo y la gestión de tareas del proyecto:
+Para la gestión de tareas en este proyecto, tanto en el backend (Node.js) como en el frontend (React), he optado por utilizar `npm scripts`. Este enfoque permite unificar el control de las distintas fases de desarrollo, pruebas y despliegue sin necesidad de configuraciones adicionales, aprovechando la flexibilidad de `npm` para ejecutar comandos de construcción, pruebas y control de calidad en un solo lugar.
 
-test: Ya está configurado para ejecutar jest --coverage para correr las pruebas unitarias con cobertura.
-lint: Añadido script para ejecutar ESLint en el código.
-format: Añadido script para ejecutar Prettier y mantener el formato consistente.
-db: Para gestionar la base de datos con Docker.
-ci:test: Este script ejecuta tanto ESLint como las pruebas (jest). Esto es útil para la integración continua, donde se necesita verificar que el código esté formateado correctamente y que todas las pruebas pasen antes de desplegar.
+- **Uniformidad**: `npm scripts` está completamente integrado en el ecosistema de Node.js, permitiendo la ejecución de tareas de forma nativa en ambos entornos. Esto facilita que cualquier colaborador pueda manejar el proyecto de manera intuitiva y sin curva de aprendizaje adicional.
+- **Eficiencia**: Los scripts en `npm` eliminan la necesidad de herramientas adicionales para gestionar procesos comunes (como pruebas, linting, y formateo), lo que reduce la complejidad en el flujo de desarrollo.
+- **Automatización**: Permite configurar tareas automatizadas para la integración continua y asegurar la consistencia de código y el éxito de las pruebas antes del despliegue.
 
-Frontend - /frontend/package.json
-En el frontend, también se han agregado algunos scripts para mejorar la calidad y gestión del código:
-lint: Añadido script para ejecutar ESLint y mantener el código limpio.
-format: Añadido script para ejecutar Prettier y mantener el formato del código consistente.
+### Configuración en `backend/package.json`
 
-lint: Ejecuta ESLint para asegurar la calidad del código.
-format: Ejecuta Prettier para dar formato al código automáticamente.
-ci:test: Script para ejecutar primero lint y después test, asegurando que tanto la calidad del código como las pruebas se pasan antes de cualquier despliegue.
-
-Justificación
-Optar por npm scripts para la gestión de tareas tiene varias ventajas:
-
-Simplicidad: npm es parte del ecosistema del proyecto, lo cual facilita la configuración y el uso para cualquier colaborador familiarizado con Node.js.
-Uniformidad: Con estos scripts, cualquier persona en el equipo puede ejecutar comandos como npm run test, npm run lint, o npm run db:start sin necesidad de aprender un sistema externo.
-Ciclo Completo: Estos scripts cubren tanto la calidad del código (linting), el formato, las pruebas, la gestión de la base de datos y los scripts de integración continua.
-Con esta configuración, el proyecto está preparado para ser gestionado con npm scripts, lo cual facilita la integración continua y asegura la calidad del código a través del ciclo de vida de desarrollo.
-
-
-
-2. Elección de la Biblioteca de Aserciones (1.5 puntos)
-Para la biblioteca de aserciones, usaría Jest para todo el proyecto.
-
-Justificación:
-Poderosa y Fácil de Usar: Jest incluye una potente API de aserciones con un enfoque sencillo y altamente configurable.
-BDD/TDD: Jest permite tanto el desarrollo basado en comportamiento (BDD) como el desarrollo basado en pruebas (TDD). Esto ofrece flexibilidad para adaptarse a las necesidades del proyecto.
-Compatibilidad: Jest funciona bien tanto para pruebas del backend como del frontend en aplicaciones JavaScript.
-Voy a proceder a implementar Jest como la biblioteca de aserciones principal para el proyecto, tanto en el backend como en el frontend. Esto asegurará que las pruebas sean consistentes en ambos entornos, facilitando un enfoque unificado para la calidad del software.
-
-
-Implementación
-- Configuración del Backend con Jest
-En el archivo /backend/package.json, ya está configurado Jest como biblioteca de aserciones, lo cual es perfecto para realizar pruebas unitarias y de integración. Ahora, voy a añadir ejemplos de configuración y estructura de pruebas para mejorar la implementación.
-
-Estructura de Carpetas de Pruebas: Dentro del directorio del backend, crearé una carpeta llamada __tests__ para almacenar los archivos de pruebas.
-
-user.test.js: Contendrá pruebas para la lógica relacionada con los usuarios.
-auth.test.js: Incluirá pruebas para la autenticación y manejo de tokens.
-attendance.test.js: Pruebas para la lógica de gestión de la asistencia.
-
-Scripts de Pruebas en package.json: Ya hemos configurado un script llamado "test": "jest --coverage" en el package.json del backend, el cual se ejecutará con npm run test. Este script corre todas las pruebas y genera un informe de cobertura.
-
-- Configuración del Frontend con Jest
-El frontend ya tiene instalado Jest, que viene como parte de react-scripts. Para realizar pruebas de componentes React, seguiré configurando Jest de la siguiente manera:
-
-Estructura de Carpetas de Pruebas: Dentro del directorio del frontend, crearé una carpeta llamada __tests__ para almacenar los archivos de pruebas.
-
-App.test.js: Pruebas del componente principal de la aplicación.
-LoginForm.test.js: Pruebas para el formulario de inicio de sesión.
-Dashboard.test.js: Pruebas para el componente del dashboard.
-
-Este ejemplo usa Jest junto con Testing Library para realizar pruebas unitarias sobre el componente de inicio de sesión y verificar el comportamiento del formulario.
-
-Scripts de Pruebas en package.json:
-
-Ya existe un script llamado "test": "react-scripts test" en el package.json del frontend. Esto se puede ejecutar con npm run test para correr las pruebas de los componentes de React.
-
-Justificación de la Elección de Jest
-Poderosa y Fácil de Usar: Jest proporciona una poderosa API para aserciones y tiene soporte directo para pruebas de aplicaciones JavaScript, ya sea en el frontend o backend.
-
-Soporte para BDD/TDD: Jest permite tanto el desarrollo basado en comportamiento (BDD) como el desarrollo basado en pruebas (TDD), proporcionando un entorno flexible para pruebas unitarias y de integración. Esto asegura que el proyecto pueda adaptarse a las necesidades específicas y a las preferencias de los desarrolladores.
-
-Compatibilidad Total: Al usar Jest tanto en el backend como en el frontend, se asegura la consistencia en las pruebas. Esto es particularmente beneficioso cuando se trabaja con una pila tecnológica JavaScript, ya que Jest puede ser usado para ambos lados del proyecto sin necesidad de instalar múltiples bibliotecas de aserciones.
-
-3. Elección del Test Runner (1.5 puntos)
-Optaría por Jest como el test runner del proyecto, ya que es una herramienta que integra tanto la biblioteca de aserciones como el framework para ejecutar los tests.
-
-Justificación:
-Todo-en-Uno: Jest incluye el runner y las aserciones, lo cual facilita la configuración.
-Integración: Al usar una única herramienta para ambas cosas, se minimiza la complejidad y se simplifica el pipeline de pruebas.
-Soporte Amplio: Jest tiene un soporte excelente para JavaScript y TypeScript, lo cual lo hace ideal para nuestro proyecto que tiene tanto frontend (React) como backend (Node.js).
-
-Voy a proceder a implementar Jest como test runner principal para todo el proyecto, aprovechando que ya hemos configurado Jest como la biblioteca de aserciones para el backend y el frontend. El uso de Jest como test runner garantiza que tanto la ejecución de las pruebas como la integración en el pipeline de integración continua sean sencillas y eficaces.
-
-Implementación
-- Configuración del Test Runner en el Backend: En el backend, Jest ya está configurado como biblioteca de aserciones y herramienta de pruebas. Ahora, voy a asegurarme de que la configuración de Jest como test runner sea clara y que todos los tests se ejecuten fácilmente con el comando npm run test.
-    - Archivos de Configuración de Jest: Jest automáticamente encuentra y ejecuta todos los archivos de prueba que terminan en .test.js o están en directorios como __tests__. Asegúrate de tener una estructura clara,
-    - Configurar Cobertura de Pruebas: La opción --coverage ya está presente, lo que generará un informe detallado de qué líneas de código están siendo cubiertas por los tests. Esto se almacenará en un directorio llamado coverage, que se puede revisar para identificar áreas que requieran más pruebas.
-- Configuración del Test Runner en el Frontend: Para el frontend, ya tenemos react-scripts test configurado como script para ejecutar Jest. Dado que Jest se incluye como parte del ecosistema de create-react-app, vamos a asegurarnos de que todo esté en su lugar para el test runner.
-    - opción --watchAll=false evita que Jest se quede ejecutando indefinidamente esperando cambios, lo cual es útil para las pruebas en integración continua.
-    - Estructura de Archivos de Prueba: Asegúrate de tener una estructura de archivos clara, con los tests ubicados en una carpeta __tests__ o junto a los componentes, siguiendo la convención de terminación .test.js.
-    - Ejemplo de Script de Pruebas: Puedes ejecutar las pruebas usando npm run test. Esto iniciará Jest como el test runner, que encontrará todos los archivos de prueba y ejecutará los tests correspondientes.
-- Justificación de la Elección de Jest como Test Runner
-Todo-en-Uno: Jest no solo incluye una poderosa API de aserciones, sino que también incluye un test runner. Al usar Jest como test runner, no se requiere una configuración adicional para ejecutar los tests, ya que todo está incluido en la misma herramienta.
-Integración Sencilla: Al tener un único test runner para todo el proyecto (frontend y backend), se asegura la consistencia. Además, como Jest también tiene soporte para Mocking y Stubs, no es necesario añadir herramientas adicionales, lo cual reduce la complejidad del proyecto.
-Soporte Amplio y Flexibilidad: Jest tiene soporte directo para JavaScript y TypeScript, lo cual es importante en nuestro proyecto, ya que el frontend está en React y el backend en Node.js. Jest también permite el uso de características modernas como snapshots, útiles en pruebas de UI.
-
-4. Integración de Pruebas con Herramientas de Construcción del Proyecto (4 puntos)
-Integraría los tests dentro de las herramientas de construcción del proyecto, usando las convenciones estándar:
-
-Backend: Añadiría el script test en package.json para el backend:
-Frontend: Similarmente, incluiría un script de pruebas en el package.json del frontend:
-
-json
-Copiar código
+```json
 "scripts": {
-  "test": "react-scripts test --env=jsdom"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "test": "jest --coverage",
+    "build": "react-scripts build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "ci:test": "npm run lint && npm run test"
 }
-Makefile: Crearía un archivo Makefile para gestionar tareas, incluyendo pruebas, linting, y otros comandos útiles para el proyecto.
+```
 
-Ejemplo de Makefile:
+- **`start`**: Ejecuta node server.js para iniciar el servidor en modo producción.
+- **`dev`**: Ejecuta nodemon server.js, iniciando el servidor en modo desarrollo y reiniciándolo automáticamente al detectar cambios. nodemon es ideal para desarrollo porque reduce la necesidad de reiniciar manualmente.
+- **`test`**: Ejecuta jest --coverage para correr todas las pruebas y generar un informe de cobertura. La cobertura permite identificar las áreas del código que no están siendo probadas, garantizando una mejor calidad del software.
+- **`build`**: Usa react-scripts build para compilar la aplicación en una versión optimizada para producción (este script puede no ser necesario en el backend, por lo que podría ser revisado).
+- **`lint`**: Ejecuta eslint . para verificar la calidad del código en el proyecto. Esto ayuda a mantener un estilo consistente y a detectar errores comunes.
+- **`format`**: Ejecuta prettier --write ., aplicando un formato uniforme en el código para mejorar la legibilidad y reducir las diferencias en el estilo de código.
+- **`db:start`** y **`db:stop`**: Utilizan docker-compose up -d y docker-compose down para iniciar y detener la base de datos en contenedores Docker. Esto simplifica la gestión de la base de datos en el entorno de desarrollo.
+- **`ci:test`**: Ejecuta lint seguido de test, asegurando que el código esté limpio y pase todas las pruebas antes de que se permita desplegar, lo cual es clave en entornos de CI.
 
-makefile
+```json
+"scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --watchAll=false",
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "ci:test": "npm run lint && npm run test"
+}
+```
+
+- **`start`**: Ejecuta react-scripts start para iniciar el servidor de desarrollo de React, lo que permite ver los cambios en tiempo real.
+- **`build`**: Usa react-scripts build para compilar la aplicación. Esto genera archivos minificados y optimizados para una mejor performance en el despliegue.
+- **`test`**: Ejecuta react-scripts test --watchAll=false para correr todas las pruebas sin que el comando se quede en espera.
+- **`eject`**: Usa react-scripts eject para extraer la configuración de Create React App y personalizar el entorno de desarrollo. 
+- **`lint`**: Ejecuta eslint, ayudando a mantener un código limpio y libre de errores.
+- **`format`**: Ejecuta prettier --write . para formatear el código automáticamente, asegurando un estilo consistente.
+- **`ci:test`**: Ejecuta lint y test, útil en la integración continua para verificar que tanto el estilo como las pruebas sean correctas antes del despliegue.
+
+#### Configuración de Jest
+En ambos `package.json`, Jest está configurado con una sección `jest` específica:
+- **transformIgnorePatterns**: Asegura que las dependencias específicas, como `axios` y `@mui/material`, sean transformadas y probadas adecuadamente.
+- **testMatch**: Define la estructura de los archivos de prueba, buscando aquellos que se encuentren en carpetas `__tests__` o que terminen en `.test.js`.
+
+---
+
+## 2. Elección de la Biblioteca de Aserciones y Test Runner
+
+**Herramienta Elegida**: `Jest`
+
+Para realizar las pruebas en el proyecto, tanto en el backend como en el frontend, se ha elegido `Jest` como biblioteca de aserciones y test runner principal. Jest proporciona un entorno robusto y altamente configurable para realizar pruebas unitarias y de integración, asegurando calidad del código y simplificando la detección de errores.
+
+- **Todo-en-Uno**: Jest no solo es una biblioteca de aserciones, sino que también incluye un test runner, simplificando la configuración y el pipeline de pruebas. Esto evita la necesidad de herramientas adicionales para ejecutar y organizar las pruebas.
+- **Potencia y Facilidad**: Jest ofrece una API intuitiva y extensa que permite realizar pruebas complejas de manera eficiente, con funcionalidades avanzadas como mocks, stubs y snapshots, que facilitan la simulación de dependencias y la verificación del comportamiento de la aplicación.
+- **Soporte BDD/TDD**: Jest permite implementar tanto el desarrollo basado en comportamiento como el desarrollo basado en pruebas, proporcionando flexibilidad en el enfoque de pruebas. Esto permite escribir pruebas antes de implementar la funcionalidad o probar el comportamiento de la aplicación en su conjunto.
+- **Compatibilidad**: Jest es ideal para proyectos JavaScript ya que funciona bien tanto en el backend con Node.js como en el frontend con React. Esto asegura una experiencia de pruebas unificada en toda la aplicación, evitando la necesidad de configurar múltiples herramientas de prueba para cada parte del proyecto.
+
+### Configuración e Implementación
+La configuración de Jest se ha realizado en los archivos `package.json` del backend y del frontend, con ajustes específicos para cada entorno y utilizando la estructura de carpetas `/__tests__/` para organizar los archivos de prueba.
+
+---
+
+## 4. Integración de Pruebas con Herramientas de Construcción del Proyecto
+
+Para estandarizar y simplificar la ejecución de tareas en el proyecto, se ha configurado un archivo `Makefile` que centraliza los comandos comunes, como pruebas, linting, compilación y gestión de la base de datos. Esto permite al entorno de CI ejecutar estas tareas de manera consistente y rápida, sin tener que recordar múltiples comandos.
+
+### Makefile
+
+El `Makefile` está diseñado para facilitar la ejecución de las tareas tanto en el backend como en el frontend. A continuación se detalla la configuración de cada tarea en el archivo:
+
+```makefile
 test-backend:
-    npm run test --prefix backend
+	npm run test --prefix backend
 
 test-frontend:
-    npm run test --prefix frontend
+	npm run test --prefix frontend
 
-test:
-    make test-backend
-    make test-frontend
-Justificación:
+test: test-backend test-frontend
 
-Uniformidad: Tener un Makefile estandariza la forma en que se ejecutan los comandos en todos los entornos, facilitando la integración tanto en local como en el pipeline CI/CD.
-Flexibilidad: Los desarrolladores pueden usar make test para ejecutar las pruebas del proyecto de forma unificada.
+lint-backend:
+	npm run lint --prefix backend
 
-Para realizar la tarea de Integración de Pruebas con Herramientas de Construcción del Proyecto y obtener la mayor puntuación posible, voy a seguir los siguientes pasos para integrar los tests en las herramientas de construcción y asegurarme de que el proyecto sea fácil de gestionar tanto en local como en los entornos de CI/CD.
+lint-frontend:
+	npm run lint --prefix frontend
 
-- Scripts en package.json para el Backend y Frontend
-Como ya hemos hablado anteriormente, se han agregado scripts de pruebas en los archivos package.json de ambos, tanto el backend como el frontend:
+lint: lint-backend lint-frontend
 
-Backend - /backend/package.json
-En el archivo /backend/package.json, tenemos el siguiente script:
+build-frontend:
+	npm run build --prefix frontend
 
-json
-Copiar código
-"scripts": {
-  "test": "jest --coverage"
-}
-Este script permite ejecutar todas las pruebas del backend usando Jest, incluyendo la generación de un informe de cobertura.
+db-start:
+	npm run db:start --prefix backend
 
-Frontend - /frontend/package.json
-En el archivo /frontend/package.json, agregué:
+db-stop:
+	npm run db:stop --prefix backend
 
-json
-Copiar código
-"scripts": {
-  "test": "react-scripts test --watchAll=false --env=jsdom"
-}
-Esto ejecuta las pruebas en el frontend utilizando Jest (integrado con react-scripts). La opción --watchAll=false evita que Jest se quede corriendo indefinidamente esperando cambios, lo cual es esencial para ejecutar los tests automáticamente.
+start: db-start
+	npm run dev --prefix backend &
+	npm run start --prefix frontend
 
-- Crear un Makefile para Uniformar Tareas
-Para estandarizar la ejecución de tareas del proyecto (incluyendo la ejecución de los tests), voy a crear un archivo Makefile. Esto permitirá a los desarrolladores y a los entornos de CI/CD ejecutar fácilmente todas las pruebas del proyecto y cualquier otra tarea de construcción, manteniendo la consistencia en todos los entornos.
+stop: db-stop
+```
+### Descripción de los Comandos
+- **`test-backend` y `test-frontend`**: Ejecutan los tests en el backend y el frontend respectivamente, utilizando Jest.
+- **`test`**: Ejecuta los tests en ambos entornos (backend y frontend) de forma secuencial, permitiendo validar el proyecto completo con un solo comando (`make test`).
+- **`lint-backend` y `lint-frontend`**: Ejecutan ESLint en el backend y el frontend para verificar el estilo de código y asegurar consistencia.
+- **`lint`**: Ejecuta el linting en ambos entornos. Este comando es particularmente útil en CI para garantizar que todo el código cumpla con los estándares antes de las pruebas o del despliegue.
+- **`build-frontend`**: Compila el frontend en una versión optimizada para producción. Esto genera los archivos necesarios para el despliegue del frontend.
+- **`db-start` y `db-stop`**: Inician y detienen la base de datos en Docker. Esto facilita la gestión del entorno de desarrollo, permitiendo levantar y desmontar la base de datos con un solo comando.
+- **`start`**: Inicia todo el entorno de desarrollo, levantando tanto la base de datos como los servidores de backend y frontend. Esto permite a los desarrolladores lanzar todo el proyecto localmente con un solo comando.
+- **`stop`**: Detiene la base de datos y el entorno de desarrollo completo, asegurando que todos los servicios se cierren adecuadamente.
 
-- Explicación y Justificación del Makefile
-    - test-backend y test-frontend: Ejecutan las pruebas del backend y el frontend respectivamente usando Jest. Esto permite probar cada parte de forma independiente.
-    - test: Ejecuta las pruebas tanto del backend como del frontend, asegurando que todo el proyecto sea evaluado. Este es el comando que se usará en la integración continua para verificar el estado de todo el proyecto.
-    - lint y lint-backend, lint-frontend: Ejecutan las comprobaciones de estilo (linting) en todo el proyecto o de forma separada. Esto es importante para mantener un código limpio y coherente.
-    - build-frontend: Realiza la construcción del frontend para prepararlo para producción.
-    - db-start y db-stop: Levantan y detienen la base de datos usando Docker Compose. Esto asegura que el entorno de desarrollo sea consistente y fácil de manejar.
-    - start y stop: Manejan el inicio y la parada del entorno completo, permitiendo a los desarrolladores levantar o detener todos los servicios necesarios con un solo comando.
+### Justificación del Enfoque
+- **Uniformidad**: Utilizar un `Makefile` estandariza la ejecución de comandos en todos los entornos, facilitando que las tareas se realicen de forma uniforme en desarrollo y en CI. Los comandos se ejecutan de la misma manera, ya sea en local o en los pipelines de integración continua, lo que minimiza posibles errores o diferencias entre entornos.
+- **Flexibilidad**: El `Makefile` permite combinar tareas fácilmente, como ejecutar pruebas y linting en un solo paso, o levantar todo el entorno de desarrollo con un solo comando (`make start`). Esto agiliza el flujo de trabajo.
+- **Facilidad de Uso**: Con comandos como `make test`, `make lint`, o `make start`, se puede ejecutar las tareas más comunes sin tener que recordar o ejecutar múltiples comandos de npm. Esto simplifica el flujo de trabajo y reduce la complejidad.
+- **Compatibilidad con CI**: Al centralizar las tareas en el `Makefile`, se facilita la integración con herramientas de CI, ya que el pipeline solo necesita llamar a los comandos definidos en el `Makefile`, garantizando que se mantenga el mismo flujo de trabajo y validación en cada push o pull request.
 
+---
 
-5. Sistema Online de Pruebas e Integración Continua (4 puntos)
-Usaría GitHub Actions como sistema de integración continua, ya que se integra perfectamente con GitHub y es altamente configurable.
+## 5. Sistema Online de Pruebas e Integración Continua
 
+**Herramienta Elegida**: GitHub Actions
 
-Configuración: Añadiría un archivo .github/workflows/ci.yml para definir los pasos del pipeline de integración continua.
-Justificación:
+He elegido GitHub Actions como el sistema de integración continua debido a su integración nativa con GitHub, su flexibilidad para configurar flujos de trabajo complejos, y su escalabilidad para gestionar pruebas, linting y despliegue en un solo entorno. La automatización de GitHub Actions permite que cada push o pull request a la rama `main` dispare un conjunto de acciones automatizadas para asegurar la calidad del código y su preparación para el despliegue.
 
-Fácil Integración: GitHub Actions se integra nativamente con los repositorios de GitHub y es muy sencillo de configurar.
-Flexibilidad: Permite definir múltiples flujos de trabajo, como pruebas, linting, y despliegue.
-Escalabilidad: Los workflows en GitHub Actions son fácilmente escalables para incluir despliegues, linting, etc.
+- **Integración Nativa**: GitHub Actions está directamente integrado con GitHub, lo que simplifica la configuración inicial y facilita la conexión con otros servicios de GitHub, como los secrets para variables de entorno y credenciales sensibles.
+- **Flexibilidad y Escalabilidad**: Permite definir workflows personalizados en un archivo YAML para ejecutar tareas en paralelo o en secuencia, adaptándose a las necesidades de pruebas, linting y despliegue del proyecto. Además, es escalable, permitiendo agregar o modificar jobs a medida que el proyecto crece o los requerimientos cambian.
+- **Paralelización**: Los tests del backend y el frontend se ejecutan en paralelo, optimizando el tiempo total del pipeline y mejorando la eficiencia en CI.
+- **Soporte de Servicios**: Permite levantar servicios auxiliares como PostgreSQL, necesarios para los tests de backend, asegurando que todas las dependencias del entorno de pruebas estén correctamente configuradas.
 
-Para integrar este Makefile en el proceso de integración continua, usaré el archivo .github/workflows/ci.yml que creamos antes y agregaré el uso de Makefile para ejecutar todas las tareas de prueba.
+### Configuración del Pipeline
 
-Justificación del Enfoque
-Uniformidad: Utilizar un Makefile permite unificar la forma en que se ejecutan los comandos en todos los entornos, ya sea en desarrollo local o en la integración continua. Esto asegura que todos los desarrolladores y sistemas ejecuten las mismas acciones, evitando inconsistencias.
+El archivo `.github/workflows/ci.yml` define el flujo de trabajo de CI en GitHub Actions. Este pipeline está dividido en dos jobs principales: `backend-tests` y `frontend-tests`, que se ejecutan en paralelo para optimizar el tiempo.
 
-Facilidad de Uso: Al tener todos los comandos clave en un Makefile, cualquier desarrollador puede ejecutar las tareas más comunes sin tener que recordar múltiples comandos npm. Por ejemplo, make test ejecuta todas las pruebas del proyecto de una sola vez.
+```yaml
+name: CI Pipeline
 
-Flexibilidad y Extensibilidad: Se pueden agregar nuevos comandos al Makefile según se necesiten, como tareas para el despliegue, limpieza, migraciones de base de datos, etc. Esto facilita el mantenimiento y la extensión del proyecto.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-Integración Continua: GitHub Actions ejecutará las tareas a través del Makefile, garantizando que los tests y otras verificaciones sean consistentes y se ejecuten cada vez que se haga un push al repositorio.
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
 
-Con este enfoque, se logra una correcta integración de las pruebas y otras tareas dentro del flujo de construcción del proyecto, asegurando la calidad del código de manera uniforme y efectiva tanto en local como en CI/CD.
+    services:
+      db:
+        image: postgres:latest
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
 
-Aquí está la versión mejorada del archivo .github/workflows/ci.yml:
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-Ejecución de Backend y Frontend: Añadí un job adicional para ejecutar los tests y linting del frontend.
-Optimización de dependencias: Asegurar que las dependencias están instaladas en el entorno adecuado.
-Paralelización de Jobs: Los jobs para backend y frontend se ejecutan de manera paralela para agilizar el flujo de trabajo.
-Verificación del PostgreSQL: He asegurado que la base de datos esté lista antes de ejecutar los tests.
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-Detalles de los Cambios:
-Versiones Específicas: Utilicé versiones específicas para las acciones (v3) para mantener la consistencia y evitar errores por versiones cambiantes.
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
 
-Paralelización de Jobs:
+      - name: Run Backend Linter
+        working-directory: ./backend
+        run: npm run lint
 
-Añadí un nuevo job llamado frontend-tests que se ejecuta en paralelo al backend-tests. De esta forma, si un cambio solo afecta al backend o al frontend, ambos se testean independientemente y se ahorra tiempo.
-Dependencias del Backend y Frontend:
+      - name: Run Backend Tests
+        working-directory: ./backend
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          POSTGRES_HOST: localhost
+        run: npm run test
 
-En cada job, se instala únicamente las dependencias necesarias (backend o frontend). Esto minimiza la cantidad de instalación innecesaria y hace el pipeline más eficiente.
-Ajuste de la Base de Datos PostgreSQL:
+  frontend-tests:
+    runs-on: ubuntu-latest
 
-Añadí un paso para esperar que PostgreSQL esté listo (Wait for PostgreSQL to be ready). Esto asegura que los tests del backend no comiencen hasta que la base de datos esté lista para aceptar conexiones.
-Linting:
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-He mantenido los comandos de linting en ambos jobs (backend y frontend) para asegurar que el código esté limpio antes de ejecutarse los tests.
-Ejecución de Tests del Frontend:
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-Para el frontend, he añadido --watchAll=false al comando de tests para asegurarse de que las pruebas no se ejecuten en modo watch, que podría causar problemas en un entorno de CI/CD.
-Uso de Variables de Entorno:
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm install
 
-Se utiliza DATA${BASE_URL} para el backend, asegurando que los tests se ejecuten en la base de datos creada específicamente para la integración continua.
-Con este flujo de trabajo en GitHub Actions, puedes garantizar que cada push o pull request en la rama main pase por una batería completa de pruebas y linting, lo que mejorará la calidad del código y asegurará la estabilidad del proyecto antes del despliegue.
+      - name: Run Frontend Linter
+        working-directory: ./frontend
+        run: npm run lint
 
-Tareas con Makefile:
+      - name: Run Frontend Tests
+        working-directory: ./frontend
+        run: npm run test
+```
 
-Lint y Tests: En lugar de escribir comandos específicos de npm para linting y pruebas, estamos utilizando make lint y make test. Esto tiene las siguientes ventajas:
-Uniformidad: Asegura que los mismos comandos se ejecuten tanto en el entorno local como en CI.
-Reducción de Complejidad: Disminuye la complejidad del archivo YAML, y facilita el mantenimiento.
-Simplificación:
+- **Eventos de Disparo**: El pipeline se activa automáticamente en cada `push` o `pull request` a la rama `main`, asegurando que cualquier cambio en la rama principal del proyecto pase por las pruebas de CI.
+- **Jobs en Paralelo**:
+  - `backend-tests` y `frontend-tests` se ejecutan en paralelo para reducir el tiempo total de CI.
+  - Esta configuración permite detectar rápidamente problemas en cualquier parte de la aplicación (backend o frontend) sin tener que esperar la finalización de ambos jobs.
+- **Servicio de PostgreSQL**:
+  - En `backend-tests`, se levanta un contenedor de PostgreSQL como servicio para que el backend pueda ejecutar pruebas de base de datos.
+  - La configuración incluye un chequeo de salud (`--health-cmd="pg_isready -U postgres"`) para asegurarse de que el servicio de PostgreSQL esté listo antes de iniciar las pruebas.
+  - Las credenciales de PostgreSQL y otras variables sensibles (`JWT_SECRET`) se gestionan a través de **GitHub Secrets**, asegurando la seguridad y evitando la exposición de datos sensibles en el repositorio.
+- **Pasos del Pipeline**:
+  - **Check out Repository**: Usa la acción `actions/checkout@v3` para clonar el repositorio en el entorno de ejecución.
+  - **Set up Node.js**: Configura Node.js en la versión 18 usando `actions/setup-node@v3`.
+  - **Instalar Dependencias**: Ejecuta `npm install` en el directorio correspondiente (backend o frontend) para instalar las dependencias necesarias.
+  - **Linting**: Ejecuta el linter (`npm run lint`) en cada job para asegurar la consistencia del estilo de código antes de ejecutar las pruebas.
+  - **Ejecución de Pruebas**: Ejecuta las pruebas unitarias con `npm run test`, donde se valida el código y se genera un informe de cobertura en el backend.
 
-Con el uso del Makefile, el script para CI es más limpio y fácil de entender.
-Todos los comandos, como pruebas y linting, son ahora consistentes, porque se ejecutan a través del Makefile tanto localmente como en GitHub Actions.
-Pasos Repetitivos Eliminados:
+---
 
-Eliminamos los pasos que instalaban dependencias y ejecutaban comandos por separado para el backend y el frontend (linting, tests), ya que ahora todos estos están incluidos dentro del Makefile.
-Estandarización:
+## 6. Implementación y Ejecución de Tests
 
-Utilizar un Makefile para definir las tareas proporciona un lugar centralizado para realizar modificaciones si en el futuro cambia la manera de ejecutar los scripts.
+Se han implementado pruebas exhaustivas para validar aspectos clave de la lógica de negocio, cubriendo las funcionalidades esenciales y asegurando que el sistema responde correctamente en casos de uso normales y excepcionales.
 
-Beneficios:
-Automatización y Estándar:
-Al usar make, los desarrolladores pueden ejecutar las tareas con facilidad, asegurando uniformidad y simplicidad en el proyecto.
-Menor Redundancia:
-Al centralizar la lógica de construcción y pruebas, se reduce la posibilidad de errores de configuración en diferentes entornos (local vs CI).
+### Backend
 
-6. Implementación y Ejecución de Tests (1.5 puntos)
-Implementaría pruebas para validar algunos aspectos importantes de la lógica del negocio. Las pruebas incluirían:
+Las pruebas de backend verifican funcionalidades críticas en las rutas de autenticación, administración de usuarios y control de asistencia. Los tests aseguran que las operaciones con datos sensibles y las reglas de acceso sean respetadas.
 
-Backend:
+- **Pruebas de Autenticación (`user.test.js` y `admin.test.js`)**:
+  - **Registro y Login de Usuarios**: Verifica que el registro y el inicio de sesión respondan correctamente para datos válidos e inválidos, incluyendo pruebas para credenciales incorrectas, duplicación de usuarios, y errores de servidor.
+  - **Protección de Rutas**: Asegura que solo los usuarios autenticados puedan acceder a información sensible, como el perfil del usuario, y que los usuarios sin autenticación reciban respuestas de error adecuadas.
+  - **Autenticación de Administradores**: Comprueba el acceso y gestión de cuentas de administrador, incluyendo el registro de nuevos administradores y la actualización de sus datos.
 
-Pruebas de Autenticación: Verificar el correcto funcionamiento de los endpoints de login y registro, usando Jest.
-Pruebas de Asistencia: Asegurarse de que un usuario pueda registrar asistencia y que la lógica del tiempo funcione correctamente.
-Frontend:
+- **Pruebas de Asistencia (`attendance.test.js`)**:
+  - **Registro y Finalización de Asistencia**: Valida que un estudiante pueda registrar y finalizar su asistencia, asegurando que no se permita más de una asistencia activa por usuario.
+  - **Acceso Basado en Rol**: Verifica que las rutas de asistencia solo permitan el acceso a estudiantes y que los administradores no puedan registrar asistencia.
+  - **Obtener Asistencias Activas**: Comprueba que los estudiantes puedan visualizar su asistencia activa y que los administradores puedan acceder al historial de asistencias de todos los usuarios.
 
-Pruebas de Componentes: Usar Jest con React Testing Library para validar que los componentes se rendericen correctamente y respondan bien a las interacciones.
-Pruebas de Integración: Asegurarse de que los flujos importantes, como el registro de asistencia, funcionen correctamente en la interfaz.
+- **Pruebas de Gestión de Laboratorios (`labs.test.js`)**:
+  - **CRUD de Laboratorios**: Pruebas para la creación, actualización, eliminación y obtención de laboratorios. Asegura que solo los administradores tengan permisos para modificar los datos de los laboratorios y que los estudiantes puedan consultarlos.
+  - **Manejo de Errores**: Incluye pruebas de validación, tales como la verificación del formato de los ID de laboratorio y la existencia del laboratorio antes de su modificación o eliminación.
+  - **Asociación con Registros de Asistencia**: Verifica que no se pueda eliminar un laboratorio si tiene registros de asistencia asociados, garantizando la integridad de los datos.
+
+### Frontend
+
+Las pruebas de frontend aseguran que los componentes React se rendericen correctamente y respondan adecuadamente a las interacciones del usuario. Se utiliza `Jest` junto con `React Testing Library` para validar el comportamiento de la interfaz.
+
+#### Componentes Probados
+
+- **`App` Component**:
+  - **Prueba de Bienvenida**: Verifica que el mensaje de bienvenida "Welcome to the Attendance Management System" se muestra correctamente en la pantalla de inicio, asegurando que la interfaz se carga como se espera.
+- **`Dashboard` Tests (`dashboard.test.js`)**:
+  - **`AttendanceRecords` Component**: 
+    - **Renderización de Registros**: Comprueba que los registros de asistencia se muestran correctamente con datos de ejemplo, incluyendo el nombre del estudiante, el laboratorio y la hora de inicio y fin.
+    - **Indicador de Carga**: Valida que, cuando `loading` es `true`, se muestre un indicador de carga (spinner) para informar al usuario que los datos están en proceso de carga.
+  - **`UserStatistics` Component**:
+    - **Estadísticas de Usuarios**: Verifica que el componente muestra correctamente las estadísticas del usuario, tales como el total de usuarios, la edad promedio y la distribución de género. Estas pruebas aseguran que la información relevante esté visible y organizada en la interfaz.
+
+- **`Login` Component (`login.test.js`)**:
+  - **Formulario de Inicio de Sesión**:
+    - **Prueba de Envío de Formulario**: Simula el llenado del formulario de login y verifica que, al enviar los datos, la aplicación realiza la solicitud correcta para autenticar al usuario. Esta prueba garantiza que el flujo de autenticación funcione correctamente y que la API de login sea llamada con los datos correctos.
+    - **Manejo de Errores**: Prueba el escenario en el que las credenciales son incorrectas, simulando una respuesta de error de la API y verificando que se muestre un mensaje de error adecuado en la interfaz ("Incorrect password"). Esto asegura que el usuario recibe retroalimentación clara cuando se produce un error en el inicio de sesión.
+
+Estas pruebas proporcionan una cobertura sólida del sistema y permiten identificar problemas en el backend y en la interfaz. La integración de `Jest` y `React Testing Library` facilita la ejecución de estas pruebas en cada fase del desarrollo y asegura que tanto el backend como el frontend cumplan con los requisitos de calidad y funcionalidad esperados.

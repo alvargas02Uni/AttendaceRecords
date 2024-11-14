@@ -4,6 +4,7 @@
 - [Descripción del Proyecto](#descripción)
 - [Configuración del Entorno](#configuración-del-entorno)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Integración Continua](#integracion-continua)
 - [Licencia](#licencia)
 
 ## Descripción
@@ -45,6 +46,9 @@ En este proyecto se han utilizado las siguientes tecnologías:
 
 ## Configuración del Entorno
 Para configurar el entorno de desarrollo, sigue las instrucciones en [environment_setup.md](./docs/environment_setup.md).
+
+## Integración Continua
+Toda la documentación sobre como se ha implementado la Integracion Continua puede verse [aquí](./docs//hito2.md).
 
 ## Licencia
 Este proyecto utiliza la licencia [MIT](./LICENSE).
