@@ -12,7 +12,7 @@ const authMiddleware = (role) => (req, res, next) => {
       console.error("Token error:", err);
       return res.status(403).json({ message: 'Invalid token' });
     }
-    console.log("User role:", user.role); // Añade esta línea para ver el rol
+    console.log("User role:", user.role); 
     req.user = user;
 
     if (role === 'student' && user.role !== 'student') {

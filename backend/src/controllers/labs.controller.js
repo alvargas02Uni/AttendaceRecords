@@ -1,115 +1,103 @@
-const pool = require('../../config/db');
+const logger = require('../util/logger');
+const {
+  getAllLabsService,
+  getLabByIdService,
+  createLabService,
+  updateLabService,
+  deleteLabService,
+} = require('../services/labs.service');
 
 // Obtener todos los laboratorios
 const getAllLabs = async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM labs');
-    res.status(200).json(rows);
+    const labs = await getAllLabsService();
+    logger.info('Consulta realizada para obtener todos los laboratorios');
+    return res.status(200).json(labs);
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ msg: 'Error al obtener los laboratorios' });
+    logger.error(`Error al obtener los laboratorios: ${error.message}`);
+    return res.status(500).json({ msg: 'Error al obtener los laboratorios' });
   }
 };
 
 // Obtener un laboratorio por ID
 const getLabById = async (req, res) => {
   const { id } = req.params;
+
   if (!id || isNaN(parseInt(id))) {
+    logger.warn('Intento de consulta de laboratorio con ID no válido');
     return res.status(400).json({ msg: 'ID no válido' });
   }
 
   try {
-    const { rows } = await pool.query('SELECT * FROM labs WHERE lab_id = $1', [id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ msg: 'Laboratorio no encontrado' });
-    }
-    res.status(200).json(rows[0]);
+    const lab = await getLabByIdService(id);
+    logger.info(`Consulta realizada para obtener laboratorio con ID: ${id}`);
+    return res.status(200).json(lab);
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ msg: 'Error al obtener el laboratorio' });
+    logger.error(`Error al obtener el laboratorio con ID ${id}: ${error.message}`);
+    return res.status(400).json({ msg: error.message });
   }
 };
 
-// Crear un laboratorio (solo administradores)
+// Crear un laboratorio
 const createLab = async (req, res) => {
   const { lab_name } = req.body;
 
-  // Validación de `lab_name`
   if (!lab_name) {
+    logger.warn('Intento de creación de laboratorio sin lab_name');
     return res.status(400).json({ msg: 'lab_name is required' });
   }
+
   if (lab_name.length > 255) {
+    logger.warn('Intento de creación de laboratorio con lab_name que excede la longitud máxima permitida');
     return res.status(400).json({ msg: 'lab_name exceeds maximum length' });
   }
 
   try {
-    const { rows: existingLab } = await pool.query('SELECT * FROM labs WHERE lab_name = $1', [lab_name]);
-    if (existingLab.length > 0) {
-      return res.status(400).json({ msg: 'El laboratorio ya existe' });
-    }
-
-    const { rows: newLab } = await pool.query(
-      'INSERT INTO labs (lab_name) VALUES ($1) RETURNING *',
-      [lab_name]
-    );
-
-    res.status(201).json(newLab[0]);
+    const newLab = await createLabService(lab_name);
+    logger.info(`Laboratorio creado con éxito: ${lab_name}`);
+    return res.status(201).json(newLab);
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ msg: 'Error al crear el laboratorio' });
+    logger.error(`Error al crear el laboratorio ${lab_name}: ${error.message}`);
+    return res.status(400).json({ msg: error.message });
   }
 };
 
-// Actualizar un laboratorio (solo administradores)
+// Actualizar un laboratorio
 const updateLab = async (req, res) => {
   const { id } = req.params;
   const { lab_name } = req.body;
 
-  // Validación de `lab_name`
   if (!lab_name) {
+    logger.warn('Intento de actualización de laboratorio sin lab_name');
     return res.status(400).json({ msg: 'lab_name is required' });
   }
+
   if (lab_name.length > 255) {
+    logger.warn('Intento de actualización de laboratorio con lab_name que excede la longitud máxima permitida');
     return res.status(400).json({ msg: 'lab_name exceeds maximum length' });
   }
 
   try {
-    const { rows: existingLab } = await pool.query('SELECT * FROM labs WHERE lab_id = $1', [id]);
-    if (existingLab.length === 0) {
-      return res.status(404).json({ msg: 'Laboratorio no encontrado' });
-    }
-
-    const { rows: updatedLab } = await pool.query(
-      'UPDATE labs SET lab_name = $1 WHERE lab_id = $2 RETURNING *',
-      [lab_name, id]
-    );
-
-    res.status(200).json(updatedLab[0]);
+    const updatedLab = await updateLabService(id, lab_name);
+    logger.info(`Laboratorio actualizado con éxito, ID: ${id}, nuevo nombre: ${lab_name}`);
+    return res.status(200).json(updatedLab);
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ msg: 'Error al actualizar el laboratorio' });
+    logger.error(`Error al actualizar el laboratorio con ID ${id}: ${error.message}`);
+    return res.status(400).json({ msg: error.message });
   }
 };
 
-// Eliminar un laboratorio (solo administradores)
+// Eliminar un laboratorio
 const deleteLab = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const { rows: existingLab } = await pool.query('SELECT * FROM labs WHERE lab_id = $1', [id]);
-    if (existingLab.length === 0) {
-      return res.status(404).json({ msg: 'Laboratorio no encontrado' });
-    }
-
-    const { rows: attendanceRecords } = await pool.query('SELECT * FROM attendance WHERE lab_id = $1', [id]);
-    if (attendanceRecords.length > 0) {
-      return res.status(400).json({ msg: 'No se puede eliminar el laboratorio, ya tiene registros de asistencia asociados' });
-    }
-
-    await pool.query('DELETE FROM labs WHERE lab_id = $1', [id]);
-    res.status(200).json({ msg: 'Laboratorio eliminado correctamente' });
+    await deleteLabService(id);
+    logger.info(`Laboratorio eliminado con éxito, ID: ${id}`);
+    return res.status(200).json({ msg: 'Laboratorio eliminado correctamente' });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ msg: 'Error al eliminar el laboratorio' });
+    logger.error(`Error al eliminar el laboratorio con ID ${id}: ${error.message}`);
+    return res.status(400).json({ msg: error.message });
   }
 };
 

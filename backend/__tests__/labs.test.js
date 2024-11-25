@@ -89,8 +89,8 @@ describe('Labs Routes', () => {
 
   describe('POST /create', () => {
     it('should create a new lab for admin', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // No existing lab
-      pool.query.mockResolvedValueOnce({ rows: [labRecord] }); // New lab created
+      pool.query.mockResolvedValueOnce({ rows: [] }); 
+      pool.query.mockResolvedValueOnce({ rows: [labRecord] }); 
 
       const response = await request(app)
         .post('/api/create')
@@ -112,7 +112,7 @@ describe('Labs Routes', () => {
     });
 
     it('should return 400 if lab_name is too long', async () => {
-      const longLabName = 'L'.repeat(256); // Assuming a max length of 255
+      const longLabName = 'L'.repeat(256); 
       const response = await request(app)
         .post('/api/create')
         .set('Authorization', `Bearer ${adminToken}`)
