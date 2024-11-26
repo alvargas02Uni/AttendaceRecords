@@ -1,3 +1,5 @@
+// admin.test.js
+
 const request = require('supertest');
 const express = require('express');
 const adminRouter = require('../src/routes/admin.routes');
@@ -46,30 +48,33 @@ describe('Admin Routes', () => {
     jwt.verify = jest.fn((token, secret, callback) => {
       callback(null, { admin_id: 1, role: 'admin' }); // Mock de verificación de token como administrador
     });
+
+    pool.query.mockReset();
+    pool.query.mockResolvedValue({ rows: [] }); // Evitar errores al destructurar 'rows'
   });
 
   describe('POST /register', () => {
     it('should register a new admin with valid data', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // Admin does not exist
+      pool.query
+        .mockResolvedValueOnce({ rows: [] }) // Verificar si el admin existe
+        .mockResolvedValueOnce({ rows: [{ admin_id: 1, ...newAdmin, admin_password: 'hashedPassword' }] }); // Insertar nuevo admin
+
       bcrypt.hash.mockResolvedValueOnce('hashedPassword');
-      pool.query.mockResolvedValueOnce({ rows: [{ admin_id: 1, ...newAdmin, admin_password: 'hashedPassword' }] });
 
       const response = await request(app)
         .post('/api/admin/register')
-        .set('Authorization', 'Bearer mockToken')
         .send(newAdmin);
 
       expect(response.status).toBe(201);
       expect(response.body.token).toBe('mockToken');
-      expect(generateToken).toHaveBeenCalledWith(expect.objectContaining({ admin_name: 'Admin' }));
+      expect(generateToken).toHaveBeenCalledWith(expect.objectContaining({ admin_id: 1, admin_email: 'adminuser@example.com' }));
     });
 
     it('should return 400 if admin already exists', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [{ admin_email: 'adminuser@example.com' }] });
+      pool.query.mockResolvedValueOnce({ rows: [{ admin_email: 'adminuser@example.com' }] }); // Admin ya existe
 
       const response = await request(app)
         .post('/api/admin/register')
-        .set('Authorization', 'Bearer mockToken')
         .send(newAdmin);
 
       expect(response.status).toBe(400);
@@ -81,7 +86,6 @@ describe('Admin Routes', () => {
 
       const response = await request(app)
         .post('/api/admin/register')
-        .set('Authorization', 'Bearer mockToken')
         .send(invalidAdmin);
 
       expect(response.status).toBe(400);
@@ -93,7 +97,6 @@ describe('Admin Routes', () => {
 
       const response = await request(app)
         .post('/api/admin/register')
-        .set('Authorization', 'Bearer mockToken')
         .send(newAdmin);
 
       expect(response.status).toBe(500);
@@ -209,6 +212,18 @@ describe('Admin Routes', () => {
 
         expect(response.status).toBe(400);
         expect(response.body.msg).toBe('Invalid input');
+      });
+
+      it('should return 500 on database error', async () => {
+        pool.query.mockRejectedValueOnce(new Error('Database error'));
+
+        const response = await request(app)
+          .put('/api/admin/admins/1')
+          .set('Authorization', 'Bearer mockToken')
+          .send(updatedAdmin);
+
+        expect(response.status).toBe(500);
+        expect(response.body.msg).toBe('Error en el servidor');
       });
     });
   });

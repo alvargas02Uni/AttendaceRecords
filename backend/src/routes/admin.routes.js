@@ -1,182 +1,31 @@
+// admin.routes.js
+
 const express = require('express');
-const { registerAdmin, loginAdmin, getAllAdmins, updateAdmin } = require('../controllers/admin.controller');
-const { authMiddleware } = require('../util/authMiddleware');
-
 const router = express.Router();
+const { body, param } = require('express-validator');
+const adminController = require('../controllers/admin.controller');
+const authenticateAdmin = require('../middlewares/authenticateAdmin'); // Asegúrate de tener este middleware
 
-/**
- * @swagger
- * tags:
- *   name: Admin
- *   description: Endpoints relacionados con la administración
- */
+router.post('/register', [
+  body('admin_name').notEmpty().withMessage('El nombre es requerido'),
+  body('admin_surname').notEmpty().withMessage('El apellido es requerido'),
+  body('admin_email').isEmail().withMessage('El correo electrónico es inválido'),
+  body('admin_password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+], adminController.registerAdmin);
 
-/**
- * @swagger
- * /admin/login:
- *   post:
- *     summary: Login de administrador
- *     tags: [Admin]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               admin_email:
- *                 type: string
- *                 description: Correo del administrador
- *               admin_password:
- *                 type: string
- *                 description: Contraseña del administrador
- *     responses:
- *       200:
- *         description: Login exitoso, devuelve un token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *       400:
- *         description: Credenciales inválidas
- */
-router.post('/login', loginAdmin);
+router.post('/login', [
+  body('admin_email').isEmail().withMessage('El correo electrónico es inválido'),
+  body('admin_password').notEmpty().withMessage('La contraseña es requerida'),
+], adminController.loginAdmin);
 
-/**
- * @swagger
- * /admin/register:
- *   post:
- *     summary: Registro de un nuevo administrador
- *     tags: [Admin]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               admin_name:
- *                 type: string
- *                 description: Nombre del administrador
- *               admin_surname:
- *                 type: string
- *                 description: Apellido del administrador
- *               admin_email:
- *                 type: string
- *                 description: Correo del administrador
- *               admin_password:
- *                 type: string
- *                 description: Contraseña del administrador
- *     responses:
- *       201:
- *         description: Administrador registrado con éxito
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 token:
- *                   type: string
- *       400:
- *         description: El administrador ya existe o datos inválidos
- */
-router.post('/register', authMiddleware('admin'), registerAdmin);
+router.get('/admins', authenticateAdmin, adminController.getAllAdmins);
 
-/**
- * @swagger
- * /admin/admins:
- *   get:
- *     summary: Obtener todos los administradores
- *     tags: [Admin]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       200:
- *         description: Lista de todos los administradores
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   admin_id:
- *                     type: integer
- *                     description: ID del administrador
- *                   admin_name:
- *                     type: string
- *                     description: Nombre del administrador
- *                   admin_surname:
- *                     type: string
- *                     description: Apellido del administrador
- *                   admin_email:
- *                     type: string
- *                     description: Correo del administrador
- *       401:
- *         description: No autorizado
- */
-router.get('/admins', authMiddleware('admin'), getAllAdmins);
-
-/**
- * @swagger
- * /admin/admins/{id}:
- *   put:
- *     summary: Actualizar información de un administrador
- *     tags: [Admin]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
- *         description: ID del administrador
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               admin_name:
- *                 type: string
- *                 description: Nombre del administrador
- *               admin_surname:
- *                 type: string
- *                 description: Apellido del administrador
- *               admin_email:
- *                 type: string
- *                 description: Correo del administrador
- *               admin_password:
- *                 type: string
- *                 description: Contraseña del administrador (opcional)
- *     responses:
- *       200:
- *         description: Información del administrador actualizada con éxito
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 admin_id:
- *                   type: integer
- *                 admin_name:
- *                   type: string
- *                 admin_surname:
- *                   type: string
- *                 admin_email:
- *                   type: string
- *       404:
- *         description: Administrador no encontrado
- *       400:
- *         description: Datos inválidos
- */
-router.put('/admins/:id', authMiddleware('admin'), updateAdmin);
+router.put('/admins/:id', authenticateAdmin, [
+  param('id').isInt().withMessage('El ID debe ser un número entero'),
+  body('admin_name').optional().notEmpty().withMessage('El nombre no puede estar vacío'),
+  body('admin_surname').optional().notEmpty().withMessage('El apellido no puede estar vacío'),
+  body('admin_email').optional().isEmail().withMessage('El correo electrónico es inválido'),
+  body('admin_password').optional().isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+], adminController.updateAdmin);
 
 module.exports = router;
