@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { body, param } = require('express-validator');
 const adminController = require('../controllers/admin.controller');
-const authenticateAdmin = require('../middlewares/authenticateAdmin'); // Asegúrate de tener este middleware
+const { authMiddleware } = require('../util/authMiddleware'); // Asegúrate de tener este middleware
 
 router.post('/register', [
   body('admin_name').notEmpty().withMessage('El nombre es requerido'),
@@ -18,9 +18,9 @@ router.post('/login', [
   body('admin_password').notEmpty().withMessage('La contraseña es requerida'),
 ], adminController.loginAdmin);
 
-router.get('/admins', authenticateAdmin, adminController.getAllAdmins);
+router.get('/admins', authMiddleware('admin'), adminController.getAllAdmins);
 
-router.put('/admins/:id', authenticateAdmin, [
+router.put('/admins/:id', authMiddleware('admin'), [
   param('id').isInt().withMessage('El ID debe ser un número entero'),
   body('admin_name').optional().notEmpty().withMessage('El nombre no puede estar vacío'),
   body('admin_surname').optional().notEmpty().withMessage('El apellido no puede estar vacío'),
