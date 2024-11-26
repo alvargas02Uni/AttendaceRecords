@@ -1,3 +1,5 @@
+// labs.service.js
+
 const pool = require('../../config/db');
 
 // Obtener todos los laboratorios

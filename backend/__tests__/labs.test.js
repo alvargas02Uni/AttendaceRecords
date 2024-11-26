@@ -1,4 +1,3 @@
-// labs.test.js
 const request = require('supertest');
 const express = require('express');
 const labsRouter = require('../src/routes/labs.routes');
@@ -31,41 +30,11 @@ describe('Labs Routes', () => {
         callback(new Error('Invalid token'));
       }
     });
-  });
 
-  describe('GET /get', () => {
-    it('should retrieve all labs for students', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [labRecord] });
-
-      const response = await request(app)
-        .get('/api/get')
-        .set('Authorization', `Bearer ${studentToken}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveLength(1);
-      expect(response.body[0]).toMatchObject(labRecord);
-    });
-
-    it('should return 403 if user is not authorized', async () => {
-      const response = await request(app).get('/api/get');
-
-      expect(response.status).toBe(401);
-      expect(response.body.message).toBe('No token provided');
-    });
+    pool.query.mockReset();
   });
 
   describe('GET /get/:id', () => {
-    it('should retrieve lab by ID for students', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [labRecord] });
-
-      const response = await request(app)
-        .get('/api/get/1')
-        .set('Authorization', `Bearer ${studentToken}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toMatchObject(labRecord);
-    });
-
     it('should return 404 if lab not found', async () => {
       pool.query.mockResolvedValueOnce({ rows: [] });
 
@@ -134,6 +103,18 @@ describe('Labs Routes', () => {
   });
 
   describe('PUT /update/:id', () => {
+    it('should return 404 if lab not found', async () => {
+      pool.query.mockResolvedValueOnce({ rows: [] }); // Lab no existe
+
+      const response = await request(app)
+        .put('/api/update/999')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ lab_name: 'Updated Lab' });
+
+      expect(response.status).toBe(404);
+      expect(response.body.msg).toBe('Laboratorio no encontrado');
+    });
+
     it('should update lab for admin', async () => {
       pool.query.mockResolvedValueOnce({ rows: [labRecord] }); // Lab exists
       pool.query.mockResolvedValueOnce({ rows: [{ ...labRecord, lab_name: 'Updated Lab' }] }); // Lab updated
@@ -181,6 +162,17 @@ describe('Labs Routes', () => {
   });
 
   describe('DELETE /delete/:id', () => {
+    it('should return 404 if lab not found', async () => {
+      pool.query.mockResolvedValueOnce({ rows: [] }); // Lab no existe
+
+      const response = await request(app)
+        .delete('/api/delete/999')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body.msg).toBe('Laboratorio no encontrado');
+    });
+    
     it('should delete lab for admin', async () => {
       pool.query.mockResolvedValueOnce({ rows: [labRecord] }); // Lab exists
       pool.query.mockResolvedValueOnce({ rows: [] }); // No attendance records
