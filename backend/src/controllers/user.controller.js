@@ -1,5 +1,11 @@
 const { validationResult } = require('express-validator');
 const logger = require('../util/logger'); 
+const {
+  registerUserService,
+  loginUserService,
+  getUserProfileService,
+  updateUserProfileService,
+} = require('../services/user.service');
 
 // Registro de usuario
 const registerUser = async (req, res) => {
