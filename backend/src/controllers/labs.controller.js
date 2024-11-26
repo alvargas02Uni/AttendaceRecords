@@ -1,5 +1,3 @@
-// labs.controller.js
-
 const { validationResult } = require('express-validator');
 const logger = require('../util/logger');
 const {

@@ -1,4 +1,3 @@
-// user.test.js
 const request = require('supertest');
 const express = require('express');
 const userRouter = require('../src/routes/user.routes');

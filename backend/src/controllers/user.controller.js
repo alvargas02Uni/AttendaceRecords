@@ -1,4 +1,5 @@
-// user.controller.js
+const { validationResult } = require('express-validator');
+const logger = require('../util/logger'); 
 
 // Registro de usuario
 const registerUser = async (req, res) => {

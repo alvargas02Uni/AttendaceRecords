@@ -1,5 +1,3 @@
-// user.service.js
-
 const bcrypt = require('bcrypt');
 const pool = require('../../config/db');
 const generateToken = require('../util/generateToken');
