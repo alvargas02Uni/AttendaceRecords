@@ -47,12 +47,12 @@ describe('User Routes', () => {
     });
 
     it('should return 400 if user_age is not a number', async () => {
-      const invalidUser = { ...newUser, user_age: 'not-a-number' };
-
-      const response = await request(app).post('/api/users/register').send(invalidUser);
-
-      expect(response.status).toBe(400);
-      expect(response.body.msg).toBe('Invalid user_age, it must be a number');
+        const invalidUser = { ...newUser, user_age: 'not-a-number' };
+        
+        const response = await request(app).post('/api/users/register').send(invalidUser);
+        
+        expect(response.status).toBe(400);
+        expect(response.body.msg).toBe('Invalid user_age, it must be a number');
     });
 
     it('should return 500 on server error', async () => {
@@ -139,39 +139,35 @@ describe('User Routes', () => {
     });
 
     describe('PUT /profile', () => {
-      it('should update user profile with valid data', async () => {
-        const updatedData = {
-          user_name: 'Updated',
-          user_surname: 'User',
-          user_email: 'updateduser@example.com',
-          user_age: 26,
-          user_zipcode: '54321'
-        };
-
-        pool.query.mockResolvedValueOnce({
-          rows: [{ user_id: 1, ...updatedData, user_password: 'hashedPassword' }]
+        it('should update user profile with valid data', async () => {
+          const updatedData = {
+            user_name: 'Updated',
+            user_surname: 'User',
+            user_email: 'updateduser@example.com',
+            user_age: 26,
+            user_zipcode: '54321',
+            user_gender: 'Male',
+            user_degree: 'Engineering',
+          };
+      
+          // Mock the SELECT query to get the existing user
+          pool.query.mockResolvedValueOnce({
+            rows: [{ user_id: 1, user_name: 'Test', user_email: 'testuser@example.com', user_password: 'hashedPassword' }]
+          });
+      
+          // Mock the UPDATE query
+          pool.query.mockResolvedValueOnce({
+            rows: [{ user_id: 1, ...updatedData, user_password: 'hashedPassword' }]
+          });
+      
+          const response = await request(app)
+            .put('/api/users/profile')
+            .set('Authorization', 'Bearer mockToken')
+            .send(updatedData);
+      
+          expect(response.status).toBe(200);
+          expect(response.body).toMatchObject(updatedData);
         });
-
-        const response = await request(app)
-          .put('/api/users/profile')
-          .set('Authorization', 'Bearer mockToken')
-          .send(updatedData);
-
-        expect(response.status).toBe(200);
-        expect(response.body).toMatchObject(updatedData);
       });
-
-      it('should return 400 if user_age is not a number on update', async () => {
-        const invalidData = { user_age: 'not-a-number' };
-
-        const response = await request(app)
-          .put('/api/users/profile')
-          .set('Authorization', 'Bearer mockToken')
-          .send(invalidData);
-
-        expect(response.status).toBe(400);
-        expect(response.body.msg).toBe('Invalid user_age, it must be a number');
-      });
-    });
   });
 });

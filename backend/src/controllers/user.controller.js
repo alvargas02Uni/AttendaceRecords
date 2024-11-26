@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const logger = require('../util/logger'); 
+const logger = require('../util/logger');
 const {
   registerUserService,
   loginUserService,
@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de registro de usuario con datos inválidos', { errors: errors.array() });
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ msg: errors.array()[0].msg, errors: errors.array() });
   }
 
   const {
@@ -25,11 +25,6 @@ const registerUser = async (req, res) => {
     user_degree,
     user_zipcode,
   } = req.body;
-
-  if (isNaN(user_age)) {
-    logger.warn('Intento de registro de usuario con un valor no numérico para user_age');
-    return res.status(400).json({ msg: 'Invalid user_age, it must be a number' });
-  }
 
   try {
     const token = await registerUserService({
