@@ -1,11 +1,4 @@
-const { validationResult } = require('express-validator');
-const logger = require('../util/logger');
-const {
-  registerUserService,
-  loginUserService,
-  getUserProfileService,
-  updateUserProfileService,
-} = require('../services/user.service');
+// user.controller.js
 
 // Registro de usuario
 const registerUser = async (req, res) => {
@@ -46,7 +39,11 @@ const registerUser = async (req, res) => {
     return res.status(201).json({ token });
   } catch (error) {
     logger.error(`Error al registrar usuario: ${error.message}`);
-    return res.status(400).json({ msg: error.message });
+    if (error.message === 'El usuario ya existe') {
+      return res.status(400).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 
@@ -60,7 +57,11 @@ const loginUser = async (req, res) => {
     return res.status(200).json({ token });
   } catch (error) {
     logger.warn(`Intento fallido de login para usuario: ${user_email}`);
-    return res.status(400).json({ msg: error.message });
+    if (error.message === 'Credenciales inválidas') {
+      return res.status(400).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 
@@ -72,7 +73,11 @@ const getUserProfile = async (req, res) => {
     return res.status(200).json(userProfile);
   } catch (error) {
     logger.error(`Error al obtener el perfil del usuario ID ${req.user.user_id}: ${error.message}`);
-    return res.status(404).json({ msg: error.message });
+    if (error.message === 'Usuario no encontrado') {
+      return res.status(404).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 
@@ -109,7 +114,11 @@ const updateUserProfile = async (req, res) => {
     return res.status(200).json(updatedProfile);
   } catch (error) {
     logger.error(`Error al actualizar el perfil del usuario ID ${req.user.user_id}: ${error.message}`);
-    return res.status(500).json({ msg: 'Error en el servidor' });
+    if (error.message === 'Usuario no encontrado') {
+      return res.status(404).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 

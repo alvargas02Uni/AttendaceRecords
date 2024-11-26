@@ -1,3 +1,5 @@
+// user.service.js
+
 const bcrypt = require('bcrypt');
 const pool = require('../../config/db');
 const generateToken = require('../util/generateToken');
@@ -64,6 +66,11 @@ const updateUserProfileService = async (user_id, {
   user_degree,
   user_zipcode,
 }) => {
+  const { rows: existingUser } = await pool.query('SELECT * FROM dep_user WHERE user_id = $1', [user_id]);
+  if (existingUser.length === 0) {
+    throw new Error('Usuario no encontrado');
+  }
+
   const hashedPassword = user_password ? await bcrypt.hash(user_password, 10) : undefined;
 
   const { rows } = await pool.query(
