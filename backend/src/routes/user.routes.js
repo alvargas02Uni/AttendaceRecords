@@ -74,17 +74,19 @@ const router = express.Router();
  *                 msg:
  *                   type: string
  */
-router.post('/register', [
-  body('user_name').notEmpty().withMessage('user_name is required'),
-  body('user_surname').notEmpty().withMessage('user_surname is required'),
-  body('user_email').isEmail().withMessage('Invalid email'),
-  body('user_password').notEmpty().withMessage('user_password is required'),
-  body('user_gender').notEmpty().withMessage('user_gender is required'),
-  body('user_age').isInt().withMessage('user_age must be a number'),
-  body('user_degree').notEmpty().withMessage('user_degree is required'),
-  body('user_zipcode').notEmpty().withMessage('user_zipcode is required'),
-], registerUser);
+// user.routes.js
 
+router.post('/register', [
+    body('user_name').notEmpty().withMessage('user_name is required'),
+    body('user_surname').notEmpty().withMessage('user_surname is required'),
+    body('user_email').isEmail().withMessage('Invalid email'),
+    body('user_password').notEmpty().withMessage('user_password is required'),
+    body('user_gender').notEmpty().withMessage('user_gender is required'),
+    body('user_age').isInt().withMessage('Invalid user_age, it must be a number'),
+    body('user_degree').notEmpty().withMessage('user_degree is required'),
+    body('user_zipcode').notEmpty().withMessage('user_zipcode is required'),
+  ], registerUser);
+  
 /**
  * @swagger
  * /users/login:
