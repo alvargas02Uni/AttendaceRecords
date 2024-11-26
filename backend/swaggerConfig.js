@@ -1,22 +1,42 @@
-const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerJsdoc = require('swagger-jsdoc');
 
-const swaggerOptions = {
-  swaggerDefinition: {
+const options = {
+  definition: {
     openapi: '3.0.0',
     info: {
       title: 'Attendance Records API',
       version: '1.0.0',
-      description: 'API para la gestión de asistencias y laboratorios',
+      description: 'API for managing attendance records, laboratories, and user accounts',
+      contact: {
+        name: 'Alejandro López Vargas',
+        email: 'e.alvargas@do.ugr.es',
+      },
+      license: {
+        name: 'MIT',
+        url: 'https://opensource.org/licenses/MIT',
+      },
     },
     servers: [
       {
-        url: 'http://localhost:5000/api',
-        description: 'Servidor de desarrollo',
+        url: 'http://localhost:5000/api', 
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{
+      bearerAuth: [],
+    }],
   },
-  apis: ['./src/routes/*.js'], // Ruta a los archivos donde se definen los endpoints
+  apis: ['./src/routes/*.js'], 
 };
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-module.exports = swaggerDocs;
+const swaggerSpec = swaggerJsdoc(options);
+
+module.exports = swaggerSpec;
