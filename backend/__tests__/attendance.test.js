@@ -31,12 +31,15 @@ describe('Attendance Routes', () => {
         callback(new Error('Invalid token'));
       }
     });
+
+    pool.query.mockReset();
   });
 
   describe('POST /attendance', () => {
     it('should register new attendance for student', async () => {
-      pool.query.mockResolvedValueOnce({ rows: [] }); // No active attendance
-      pool.query.mockResolvedValueOnce({ rows: [attendanceRecord] }); // Register new attendance
+      pool.query
+        .mockResolvedValueOnce({ rows: [] }) // No active attendance
+        .mockResolvedValueOnce({ rows: [attendanceRecord] }); // Register new attendance
 
       const response = await request(app)
         .post('/api/attendance')

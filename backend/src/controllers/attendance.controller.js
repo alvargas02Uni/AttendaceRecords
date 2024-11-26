@@ -1,3 +1,5 @@
+// attendance.controller.js
+
 const { validationResult } = require('express-validator');
 const logger = require('../util/logger');
 const {
@@ -23,7 +25,11 @@ const registerAttendance = async (req, res) => {
     return res.status(201).json(attendance);
   } catch (error) {
     logger.error(`Error al registrar asistencia, usuario ID: ${user_id}, laboratorio ID: ${lab_id}: ${error.message}`);
-    return res.status(400).json({ msg: error.message });
+    if (error.message === 'Ya tienes una asistencia activa en este laboratorio') {
+      return res.status(409).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 
@@ -38,7 +44,11 @@ const endAttendance = async (req, res) => {
     return res.status(200).json(updatedAttendance);
   } catch (error) {
     logger.error(`Error al finalizar asistencia, usuario ID: ${user_id}, asistencia ID: ${att_id}: ${error.message}`);
-    return res.status(400).json({ msg: error.message });
+    if (error.message === 'No se encontró una asistencia activa') {
+      return res.status(404).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 
@@ -64,7 +74,11 @@ const getAttendanceByUser = async (req, res) => {
     return res.status(200).json(activeAttendance);
   } catch (error) {
     logger.error(`Error al obtener la asistencia activa para el usuario ID ${user_id}: ${error.message}`);
-    return res.status(400).json({ msg: error.message });
+    if (error.message === 'No hay asistencias activas para este usuario') {
+      return res.status(404).json({ msg: error.message });
+    } else {
+      return res.status(500).json({ msg: 'Error en el servidor' });
+    }
   }
 };
 

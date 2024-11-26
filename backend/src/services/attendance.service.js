@@ -1,3 +1,5 @@
+// attendance.service.js
+
 const pool = require('../../config/db');
 
 // Registrar la asistencia de un estudiante
