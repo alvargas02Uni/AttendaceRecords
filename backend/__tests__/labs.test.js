@@ -47,12 +47,12 @@ describe('Labs Routes', () => {
     });
 
     it('should return 400 for invalid ID format', async () => {
-      const response = await request(app)
-        .get('/api/get/invalid')
-        .set('Authorization', `Bearer ${studentToken}`);
-
-      expect(response.status).toBe(400);
-      expect(response.body.msg).toBe('ID no válido');
+        const response = await request(app)
+          .get('/api/get/invalid')
+          .set('Authorization', `Bearer ${studentToken}`);
+    
+        expect(response.status).toBe(400);
+        expect(response.body.msg).toBe('ID must be an integer');
     });
   });
 
@@ -172,7 +172,7 @@ describe('Labs Routes', () => {
       expect(response.status).toBe(404);
       expect(response.body.msg).toBe('Laboratorio no encontrado');
     });
-    
+
     it('should delete lab for admin', async () => {
       pool.query.mockResolvedValueOnce({ rows: [labRecord] }); // Lab exists
       pool.query.mockResolvedValueOnce({ rows: [] }); // No attendance records
