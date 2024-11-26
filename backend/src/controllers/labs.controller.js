@@ -27,7 +27,7 @@ const getLabById = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de consulta de laboratorio con ID no válido');
-    return res.status(400).json({ msg: 'ID no válido', errors: errors.array() });
+    return res.status(400).json({ msg: errors.array()[0].msg, errors: errors.array() });
   }
 
   const { id } = req.params;
@@ -51,7 +51,7 @@ const createLab = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de creación de laboratorio con datos inválidos');
-    return res.status(400).json({ msg: 'Datos inválidos', errors: errors.array() });
+    return res.status(400).json({ msg: errors.array()[0].msg, errors: errors.array() });
   }
 
   const { lab_name } = req.body;
@@ -75,7 +75,7 @@ const updateLab = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de actualización de laboratorio con datos inválidos');
-    return res.status(400).json({ msg: 'Datos inválidos', errors: errors.array() });
+    return res.status(400).json({ msg: errors.array()[0].msg, errors: errors.array() });
   }
 
   const { id } = req.params;
@@ -100,7 +100,7 @@ const deleteLab = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de eliminación de laboratorio con ID no válido');
-    return res.status(400).json({ msg: 'ID no válido', errors: errors.array() });
+    return res.status(400).json({ msg: errors.array()[0].msg, errors: errors.array() });
   }
 
   const { id } = req.params;
