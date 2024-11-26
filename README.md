@@ -4,7 +4,8 @@
 - [Descripción del Proyecto](#descripción)
 - [Configuración del Entorno](#configuración-del-entorno)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
-- [Integración Continua](#integracion-continua)
+- [Integración Continua del Hito 2](#integracion-continua)
+- [Documentación del Hito 3](#documentación-del-proyecto)
 - [Licencia](#licencia)
 
 ## Descripción
@@ -47,8 +48,18 @@ En este proyecto se han utilizado las siguientes tecnologías:
 ## Configuración del Entorno
 Para configurar el entorno de desarrollo, sigue las instrucciones en [environment_setup.md](./docs/environment_setup.md).
 
-## Integración Continua
+## Integración Continua del Hito 2
 Toda la documentación sobre como se ha implementado la Integracion Continua puede verse [aquí](./docs//hito2.md).
+
+## Documentación del Hito 3
+
+Para obtener más detalles sobre el proyecto, puedes consultar los siguientes documentos:
+
+- [Justificación Técnica del Framework Elegido para el Microservicio](./docs/hito3/Framework.md)
+- [Diseño General de la API, Rutas, y Documentación](./docs/hito3/Diseño.md)
+- [Uso de Logs para Registrar la Actividad de la API](./docs/hito3/Logs.md)
+- [Pruebas Implementadas para Garantizar la Calidad de la API](./docs/hito3/Tests.md)
+
 
 ## Licencia
 Este proyecto utiliza la licencia [MIT](./LICENSE).
