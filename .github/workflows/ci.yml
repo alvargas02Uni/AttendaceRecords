@@ -45,6 +45,7 @@ jobs:
       - name: Run Backend Tests
         working-directory: ./backend
         env:
+          FLUENTD_HOST: logs
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}

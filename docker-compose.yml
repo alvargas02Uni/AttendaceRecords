@@ -19,6 +19,15 @@ services:
       timeout: 5s
       retries: 5
 
+  logs:
+    build:
+      context: ./logs
+      dockerfile: Dockerfile.logs
+    ports:
+      - "24224:24224" 
+    networks:
+      - attendancerecords-network
+
   backend:
     build:
       context: ./backend
@@ -27,19 +36,11 @@ services:
       - backend-logs:/var/log/backend
     depends_on:
       - db
+      - logs
     networks:
       - attendancerecords-network
     ports:
       - "5000:5000"
-
-  logs:
-    build:
-      context: ./logs
-      dockerfile: Dockerfile.logs
-    volumes:
-      - backend-logs:/var/log/backend
-    networks:
-      - attendancerecords-network
 
   frontend:
     build:
