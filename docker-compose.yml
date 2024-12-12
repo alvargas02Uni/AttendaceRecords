@@ -23,20 +23,23 @@ services:
     build:
       context: ./backend
       dockerfile: docker/Dockerfile.backend
-    environment:
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_HOST: db
-      POSTGRES_PORT: $POSTGRES_PORT
-      JWT_SECRET: $JWT_SECRET
-      PORT: 5000
+    volumes:
+      - backend-logs:/var/log/backend
     depends_on:
       - db
     networks:
       - attendancerecords-network
     ports:
       - "5000:5000"
+
+  logs:
+    build:
+      context: ./logs
+      dockerfile: Dockerfile.logs
+    volumes:
+      - backend-logs:/var/log/backend
+    networks:
+      - attendancerecords-network
 
   frontend:
     build:
@@ -52,6 +55,7 @@ services:
 
 volumes:
   db-data:
+  backend-logs:
 
 networks:
   attendancerecords-network:

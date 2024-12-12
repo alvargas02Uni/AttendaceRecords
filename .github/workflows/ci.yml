@@ -9,27 +9,25 @@ on:
       - main
 
 jobs:
-  backend-tests:
+  tests:
     runs-on: ubuntu-latest
-
-    services:
-      db:
-        image: postgres:latest
-        options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      - name: Start services with Docker Compose
+        run: docker-compose up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          sleep 30
+          docker-compose ps
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -55,18 +53,6 @@ jobs:
           POSTGRES_HOST: localhost
         run: npm run test
 
-  frontend-tests:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm install
@@ -75,6 +61,10 @@ jobs:
         working-directory: ./frontend
         run: npm run lint
 
-      - name: Run   Tests
+      - name: Run Frontend Tests
         working-directory: ./frontend
         run: npm run test
+
+      - name: Stop and clean up Docker Compose
+        if: always()
+        run: docker-compose down --volumes

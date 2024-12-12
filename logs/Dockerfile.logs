@@ -1,0 +1,2 @@
+FROM fluent/fluentd:v1.15-debian-1
+COPY fluent.conf /fluentd/etc/

@@ -24,21 +24,9 @@ lint-frontend:
 # Ejecutar linting en ambos (backend y frontend)
 lint: lint-backend lint-frontend
 
-# Construir el Frontend
-build-frontend:
-	npm run build --prefix frontend
-
-# Iniciar la base de datos en Docker
-db-start:
-	$(DOCKER_COMPOSE) up -d db
-
-# Detener la base de datos en Docker
-db-stop:
-	$(DOCKER_COMPOSE) stop db
-
 # Ejecutar entorno completo (Frontend, Backend, y DB)
 start:
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) up 
 
 # Detener todos los servicios
 stop:

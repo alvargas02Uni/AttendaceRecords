@@ -1,22 +1,18 @@
 const { createLogger, format, transports } = require('winston');
 require('winston-daily-rotate-file');
 
-const logFormat = format.printf(({ timestamp, level, message }) => {
-  return `${timestamp} [${level.toUpperCase()}]: ${message}`;
-});
-
 const logger = createLogger({
-  level: 'info', // Nivel de log (info, warn, error, debug)
+  level: 'info',
   format: format.combine(
     format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    logFormat
+    format.json() 
   ),
   transports: [
-    new transports.Console(), // Mostrar logs en la consola
+    new transports.Console(),
     new transports.DailyRotateFile({
-      filename: 'logs/application-%DATE%.log',
+      filename: '/var/log/backend/AttendanceRecords-%DATE%.log',
       datePattern: 'YYYY-MM-DD',
-      maxFiles: '14d' // Guardar los logs por 14 días
+      maxFiles: '14d'
     })
   ],
 });
