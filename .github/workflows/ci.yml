@@ -29,6 +29,11 @@ jobs:
           sleep 30
           docker-compose ps
 
+      - name: Test Cluster Services
+        run: |
+          chmod +x ./test_cluster.sh
+          ./test_cluster.sh
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:

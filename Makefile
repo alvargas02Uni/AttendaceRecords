@@ -25,7 +25,7 @@ lint-frontend:
 lint: lint-backend lint-frontend
 
 # Ejecutar entorno completo (Frontend, Backend, y DB)
-start:
+start: build
 	$(DOCKER_COMPOSE) up 
 
 # Detener todos los servicios

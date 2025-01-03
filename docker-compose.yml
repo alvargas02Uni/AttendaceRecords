@@ -24,9 +24,14 @@ services:
       context: ./logs
       dockerfile: Dockerfile.logs
     ports:
-      - "24224:24224" 
+      - "24224:24224"
     networks:
       - attendancerecords-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:24224"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
