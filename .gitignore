@@ -24,7 +24,7 @@ coverage/
 # Build directories and generated files
 build/
 dist/
-public/
+
 **/public/*.map
 
 # Environment variable files
