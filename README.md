@@ -4,8 +4,9 @@
 - [Descripción del Proyecto](#descripción)
 - [Configuración del Entorno](#configuración-del-entorno)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
-- [Integración Continua del Hito 2](#integracion-continua)
+- [Documentación del Hito 2](#integracion-continua)
 - [Documentación del Hito 3](#documentación-del-proyecto)
+- [Documentación del Hito 4](#documentación-del-hito-4)
 - [Licencia](#licencia)
 
 ## Descripción
@@ -60,6 +61,12 @@ Para obtener más detalles sobre el proyecto, puedes consultar los siguientes do
 - [Uso de Logs para Registrar la Actividad de la API](./docs/hito3/Logs.md)
 - [Pruebas Implementadas para Garantizar la Calidad de la API](./docs/hito3/Tests.md)
 
+## Documentación del Hito 4
+
+Para este hito, se han documentado los siguientes aspectos:
+
+- [Documentación del Clúster de Contenedores](./docs/hito4/cluster-contenedores.md)
+- [Implementación y Ejecución del Test del Clúster](./docs/hito4/cluster-git-test.md)
 
 ## Licencia
 Este proyecto utiliza la licencia [MIT](./LICENSE).
