@@ -63,10 +63,7 @@ Para obtener más detalles sobre el proyecto, puedes consultar los siguientes do
 
 ## Documentación del Hito 4
 
-Para este hito, se han documentado los siguientes aspectos:
-
-- [Documentación del Clúster de Contenedores](./docs/hito4/cluster-contenedores.md)
-- [Implementación y Ejecución del Test del Clúster](./docs/hito4/cluster-git-test.md)
+Toda la documentacion sobre el cluster de contenedores puede consultarse [aquí](./docs/hito4.md)
 
 ## Licencia
 Este proyecto utiliza la licencia [MIT](./LICENSE).
