@@ -37,6 +37,13 @@ services:
     build:
       context: ./backend
       dockerfile: docker/Dockerfile.backend
+    environment:
+      LOGS_HOST: logs
+      LOGS_PORT: 24224
+      POSTGRES_HOST: db
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
     volumes:
       - backend-logs:/var/log/backend
     depends_on:
@@ -46,14 +53,21 @@ services:
       - attendancerecords-network
     ports:
       - "5000:5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api-docs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build:
       context: ./frontend
       dockerfile: docker/Dockerfile.frontend
     environment:
-      REACT_APP_BACKEND_URL: http://localhost:5000
+      REACT_APP_BACKEND_URL: http://backend:5000
       CI: "true"
+    depends_on:
+      - backend
     networks:
       - attendancerecords-network
     ports:

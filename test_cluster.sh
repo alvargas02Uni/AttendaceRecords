@@ -12,11 +12,13 @@ docker-compose ps
 
 # Test de conectividad al backend
 echo "Testeando el backend..."
-BACKEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api-docs)
+BACKEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api-docs/)
 if [ "$BACKEND_RESPONSE" -eq 200 ]; then
   echo "✅ Backend está funcionando correctamente"
 else
   echo "❌ Backend no responde como se esperaba"
+  echo "Logs del backend:"
+  docker logs attendacerecords_backend_1
   exit 1
 fi
 
@@ -27,6 +29,8 @@ if [ "$FRONTEND_RESPONSE" -eq 200 ]; then
   echo "✅ Frontend está funcionando correctamente"
 else
   echo "❌ Frontend no responde como se esperaba"
+  echo "Logs del frontend:"
+  docker logs attendacerecords_frontend_1
   exit 1
 fi
 
@@ -37,6 +41,8 @@ if [ "$LOGS_RESPONSE" -eq 200 ]; then
   echo "✅ Sistema de logs funcionando correctamente"
 else
   echo "❌ Sistema de logs no responde como se esperaba"
+  echo "Logs del sistema de logs:"
+  docker logs attendacerecords_logs_1
   exit 1
 fi
 

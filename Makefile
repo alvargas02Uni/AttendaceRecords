@@ -33,8 +33,8 @@ stop:
 	$(DOCKER_COMPOSE) down
 
 # Reiniciar el entorno de contenedores
-restart:
-	$(DOCKER_COMPOSE) down && $(DOCKER_COMPOSE) up -d
+restart: stop start
+	
 
 # Ver logs de todos los contenedores
 logs:
