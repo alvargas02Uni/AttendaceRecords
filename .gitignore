@@ -54,3 +54,5 @@ Thumbs.db
 .eslintconfig
 .eslintignore
 .prettierignore
+
+key.json

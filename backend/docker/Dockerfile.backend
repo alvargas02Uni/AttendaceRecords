@@ -1,13 +1,24 @@
-# Dockerfile.backend
+# Usa Node.js 18 como imagen base
 FROM node:18
 
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Copiar los archivos de dependencias antes de instalar para aprovechar la caché
+COPY package.json package-lock.json ./
 
+# Fuerza la instalación de dependencias
+RUN npm install --omit=dev && npm cache clean --force
+
+# Copiar el resto del código fuente
 COPY . .
 
+# Variables de entorno (NO definir GOOGLE_APPLICATION_CREDENTIALS aquí)
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
+
+# Exponer el puerto
 EXPOSE 5000
 
+# Comando de inicio
 CMD ["npm", "start"]
