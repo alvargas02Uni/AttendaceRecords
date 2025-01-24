@@ -207,10 +207,10 @@ Aquí se utiliza una conexión estándar por TCP con PostgreSQL, donde el host e
 ## 6. Resultados y pruebas
 Después de completar el despliegue en Google Cloud Run, se realizaron diversas pruebas para garantizar que la aplicación funciona correctamente en el entorno de producción.
 
-✅ Correcto acceso a la API desplegada: Se verificó que la API es accesible desde la URL proporcionada por Cloud Run. Se realizaron pruebas con la herramienta swagger para asegurarse de que los endpoints respondieran correctamente.
-✅ Conexión estable con Google Cloud SQL: Se comprobó que la API puede conectarse correctamente a la base de datos en Google Cloud SQL utilizando la configuración definida en las variables de entorno (DB_HOST, DB_USER, DB_PASS, DB_NAME). Se ejecutaron consultas básicas para verificar que la base de datos responde y almacena datos como se espera.
-✅ Logs accesibles desde Google Cloud Logging: Se revisaron los logs generados por la aplicación a través de Google Cloud Logging para confirmar que los eventos importantes (como inicios de sesión, consultas a la base de datos y errores) se registran adecuadamente.
-✅ Despliegue automático desde GitHub Actions: Se probó que al realizar un push en la rama main, el flujo de trabajo de GitHub Actions se ejecuta correctamente y actualiza la versión desplegada en Google Cloud Run sin intervención manual. Se verificó que los pasos de construcción, subida de la imagen a Artifact Registry y despliegue en Cloud Run se ejecutan sin errores.
+- Correcto acceso a la API desplegada: Se verificó que la API es accesible desde la URL proporcionada por Cloud Run. Se realizaron pruebas con la herramienta swagger para asegurarse de que los endpoints respondieran correctamente.
+- Conexión estable con Google Cloud SQL: Se comprobó que la API puede conectarse correctamente a la base de datos en Google Cloud SQL utilizando la configuración definida en las variables de entorno (DB_HOST, DB_USER, DB_PASS, DB_NAME). Se ejecutaron consultas básicas para verificar que la base de datos responde y almacena datos como se espera.
+- Logs accesibles desde Google Cloud Logging: Se revisaron los logs generados por la aplicación a través de Google Cloud Logging para confirmar que los eventos importantes (como inicios de sesión, consultas a la base de datos y errores) se registran adecuadamente.
+- Despliegue automático desde GitHub Actions: Se probó que al realizar un push en la rama main, el flujo de trabajo de GitHub Actions se ejecuta correctamente y actualiza la versión desplegada en Google Cloud Run sin intervención manual. Se verificó que los pasos de construcción, subida de la imagen a Artifact Registry y despliegue en Cloud Run se ejecutan sin errores.
 
 ## 7. Conclusión
 
