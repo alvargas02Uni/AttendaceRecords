@@ -4,9 +4,10 @@
 - [Descripción del Proyecto](#descripción)
 - [Configuración del Entorno](#configuración-del-entorno)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
-- [Documentación del Hito 2](#integracion-continua)
-- [Documentación del Hito 3](#documentación-del-proyecto)
+- [Documentación del Hito 2](#documentación-del-hito-2)
+- [Documentación del Hito 3](#documentación-del-hito-3)
 - [Documentación del Hito 4](#documentación-del-hito-4)
+- [Documentación del Hito 5](#documentación-del-hito-5)
 - [Licencia](#licencia)
 
 ## Descripción
@@ -49,7 +50,7 @@ En este proyecto se han utilizado las siguientes tecnologías:
 ## Configuración del Entorno
 Para configurar el entorno de desarrollo, sigue las instrucciones en [environment_setup.md](./docs/environment_setup.md).
 
-## Integración Continua del Hito 2
+## Documentación del Hito 2
 Toda la documentación sobre como se ha implementado la Integracion Continua puede verse [aquí](./docs//hito2.md).
 
 ## Documentación del Hito 3
@@ -64,6 +65,11 @@ Para obtener más detalles sobre el proyecto, puedes consultar los siguientes do
 ## Documentación del Hito 4
 
 Toda la documentacion sobre el cluster de contenedores puede consultarse [aquí](./docs/hito4.md)
+
+## Documentación del Hito 5
+
+Toda la documentacion sobre el despliegue en un servicio PaaS puede consultarse [aquí](./docs/hito5.md)
+
 
 ## Licencia
 Este proyecto utiliza la licencia [MIT](./LICENSE).
