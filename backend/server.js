@@ -60,14 +60,13 @@ if (ENVIRONMENT !== 'production') {
 // Análisis del cuerpo de las solicitudes entrantes en formato JSON
 app.use(express.json());
 
-// Manejo de proxy en Cloud Run para redirigir HTTP a HTTPS
+// Manejo de proxy en Cloud Run para redirigir HTTP a HTTPS solo en producción
 app.set('trust proxy', true);
 app.use((req, res, next) => {
-    if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
-        next();
-    } else {
-        res.redirect(`https://${req.headers.host}${req.url}`);
+    if (ENVIRONMENT === 'production' && !(req.secure || req.headers['x-forwarded-proto'] === 'https')) {
+        return res.redirect(`https://${req.headers.host}${req.url}`);
     }
+    next();
 });
 
 // Límite de tasa
@@ -77,8 +76,8 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Documentación de Swagger
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+// Documentación de Swagger (evita el redirect en `/api-docs/`)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, { explorer: true }));
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
@@ -107,7 +106,7 @@ if (ENVIRONMENT !== 'test') {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`[INFO] Server running on port ${PORT}`);
-        console.log(`[INFO] Swagger Docs available at https://attendance-records-551620082303.europe-southwest1.run.app/api-docs`);
+        console.log(`[INFO] Swagger Docs available at http://localhost:${PORT}/api-docs`);
     });
 }
 

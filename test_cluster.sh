@@ -12,7 +12,7 @@ docker-compose ps
 
 # Test de conectividad al backend
 echo "Testeando el backend..."
-BACKEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api-docs/)
+BACKEND_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -L http://localhost:5000/api-docs/)
 if [ "$BACKEND_RESPONSE" -eq 200 ]; then
   echo "✅ Backend está funcionando correctamente"
 else
