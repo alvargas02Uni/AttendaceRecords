@@ -60,7 +60,7 @@ gcloud run deploy $SERVICE_NAME \
     --set-env-vars DB_HOST="/cloudsql/attendancerecords:europe-southwest1:attendance-reccords-sql" \
     --set-env-vars DB_USER="postgres" \
     --set-env-vars DB_PASS="password" \
-    --set-env-vars DB_NAME="x" \
+    --set-env-vars DB_NAME="AttendanceRecords_db" \
     --quiet || { log "Error en el despliegue"; exit 1; }
 
 # 8. Obtener la URL del servicio
