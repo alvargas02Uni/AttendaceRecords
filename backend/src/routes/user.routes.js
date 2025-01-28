@@ -170,7 +170,7 @@ router.post('/login', [
  *       401:
  *         description: Unauthorized, invalid or missing token
  */
-router.get('/profile', authMiddleware('student'), getUserProfile);
+router.get('/profile', authMiddleware, getUserProfile);
 
 /**
  * @swagger
@@ -235,7 +235,7 @@ router.get('/profile', authMiddleware('student'), getUserProfile);
  *       401:
  *         description: Unauthorized, invalid or missing token
  */
-router.put('/profile', authMiddleware('student'), [
+router.put('/profile', authMiddleware, [
   body('user_name').optional(),
   body('user_surname').optional(),
   body('user_email').optional().isEmail().withMessage('Invalid email'),

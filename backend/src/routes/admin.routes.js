@@ -97,7 +97,7 @@ router.post('/login', [
  *       401:
  *         description: Unauthorized
  */
-router.get('/admins', authMiddleware('admin'), adminController.getAllAdmins);
+router.get('/admins', authMiddleware, adminController.getAllAdmins);
 
 /**
  * @swagger
@@ -137,7 +137,7 @@ router.get('/admins', authMiddleware('admin'), adminController.getAllAdmins);
  *       401:
  *         description: Unauthorized
  */
-router.put('/admins/:id', authMiddleware('admin'), [
+router.put('/admins/:id', authMiddleware, [
   param('id').isInt().withMessage('El ID debe ser un número entero'),
   body('admin_name').optional().notEmpty().withMessage('El nombre no puede estar vacío'),
   body('admin_surname').optional().notEmpty().withMessage('El apellido no puede estar vacío'),

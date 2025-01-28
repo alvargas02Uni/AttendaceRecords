@@ -7,6 +7,7 @@ const {
   getAttendanceByUser,
 } = require('../controllers/attendance.controller');
 const { authMiddleware } = require('../util/authMiddleware');
+
 const router = express.Router();
 
 /**
@@ -15,6 +16,7 @@ const router = express.Router();
  *   name: Attendance
  *   description: Attendance management
  */
+
 
 /**
  * @swagger
@@ -41,7 +43,7 @@ const router = express.Router();
  *       400:
  *         description: Validation error
  */
-router.post('/attendance', authMiddleware('student'), [
+router.post('/', authMiddleware, [
   body('lab_id').isInt().withMessage('lab_id must be an integer'),
 ], registerAttendance);
 
@@ -66,7 +68,7 @@ router.post('/attendance', authMiddleware('student'), [
  *       400:
  *         description: Validation error
  */
-router.put('/attendance/:att_id/end', authMiddleware('student'), [
+router.put('/:att_id/end', authMiddleware, [
   param('att_id').isInt().withMessage('att_id must be an integer'),
 ], endAttendance);
 
@@ -84,33 +86,22 @@ router.put('/attendance/:att_id/end', authMiddleware('student'), [
  *       401:
  *         description: Unauthorized
  */
-router.get('/attendance', authMiddleware('admin'), getAllAttendances);
+router.get('/', authMiddleware, getAllAttendances);
 
 /**
  * @swagger
- * /attendance/active/{user_id}:
+ * /attendance/active:
  *   get:
- *     summary: Get active attendance for a user
+ *     summary: Get active attendance for the authenticated user
  *     tags: [Attendance]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: user_id
- *         required: true
- *         schema:
- *           type: integer
- *         description: User ID
  *     responses:
  *       200:
  *         description: Active attendance retrieved successfully
- *       400:
- *         description: Validation error
  *       404:
  *         description: No active attendance found
  */
-router.get('/attendance/active/:user_id', authMiddleware('student'), [
-  param('user_id').isInt().withMessage('user_id must be an integer'),
-], getAttendanceByUser);
+router.get('/active', authMiddleware, getAttendanceByUser);
 
 module.exports = router;

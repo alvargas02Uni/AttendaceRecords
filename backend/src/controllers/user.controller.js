@@ -15,56 +15,37 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ msg: errors.array()[0].msg, errors: errors.array() });
   }
 
-  const {
-    user_name,
-    user_surname,
-    user_email,
-    user_password,
-    user_gender,
-    user_age,
-    user_degree,
-    user_zipcode,
-  } = req.body;
-
   try {
-    const token = await registerUserService({
-      user_name,
-      user_surname,
-      user_email,
-      user_password,
-      user_gender,
-      user_age,
-      user_degree,
-      user_zipcode
-    });
-
-    logger.info(`Usuario registrado con éxito: ${user_email}`);
-    return res.status(201).json({ token });
+    const { token, user } = await registerUserService(req.body);
+    logger.info(`Usuario registrado con éxito: ${user.user_email}`);
+    return res.status(201).json({ token, user });
   } catch (error) {
-    logger.error(`Error al registrar usuario: ${error.message}`);
-    if (error.message.includes('duplicate key value')) {
-      return res.status(400).json({ msg: 'El usuario ya existe' });
-    } else {
-      return res.status(500).json({ msg: 'Error en el servidor' });
+    // Ajustamos el error "El usuario ya existe" para devolver 400
+    if (error.message === 'El usuario ya existe') {
+      logger.error(`Error al registrar usuario: ${error.message}`);
+      return res.status(400).json({ msg: error.message });
     }
+    // Para cualquier otro error, devolvemos 500
+    logger.error(`Error al registrar usuario: ${error.message}`);
+    return res.status(500).json({ msg: error.message });
   }
 };
 
 // Login de usuario
 const loginUser = async (req, res) => {
-  const { user_email, user_password } = req.body;
-
   try {
-    const token = await loginUserService(user_email, user_password);
-    logger.info(`Usuario inició sesión: ${user_email}`);
-    return res.status(200).json({ token });
+    const { token, user } = await loginUserService(req.body.user_email, req.body.user_password);
+    logger.info(`Usuario inició sesión: ${user.user_email}`);
+    return res.status(200).json({ token, user });
   } catch (error) {
-    logger.warn(`Intento fallido de login para usuario: ${user_email}`);
+    // Ajustamos el error de "Credenciales inválidas" para 400
     if (error.message === 'Credenciales inválidas') {
+      logger.warn(`Intento fallido de login para usuario: ${req.body.user_email}`);
       return res.status(400).json({ msg: error.message });
-    } else {
-      return res.status(500).json({ msg: 'Error en el servidor' });
     }
+    // Para cualquier otro error (p.ej. de base de datos), devolvemos 500
+    logger.error(`Error al iniciar sesión para usuario: ${req.body.user_email} - ${error.message}`);
+    return res.status(500).json({ msg: error.message });
   }
 };
 
@@ -76,52 +57,20 @@ const getUserProfile = async (req, res) => {
     return res.status(200).json(userProfile);
   } catch (error) {
     logger.error(`Error al obtener el perfil del usuario ID ${req.user.user_id}: ${error.message}`);
-    if (error.message === 'Usuario no encontrado') {
-      return res.status(404).json({ msg: error.message });
-    } else {
-      return res.status(500).json({ msg: 'Error en el servidor' });
-    }
+    // Para "Usuario no encontrado" usas 404 (coincide con el test)
+    return res.status(404).json({ msg: error.message });
   }
 };
 
 // Actualizar perfil del usuario
 const updateUserProfile = async (req, res) => {
-  const {
-    user_name,
-    user_surname,
-    user_email,
-    user_password,
-    user_gender,
-    user_age,
-    user_degree,
-    user_zipcode,
-  } = req.body;
-
-  if (user_age && isNaN(user_age)) {
-    logger.warn('Intento de actualización de perfil con un valor no numérico para user_age');
-    return res.status(400).json({ msg: 'Invalid user_age, it must be a number' });
-  }
-
   try {
-    const updatedProfile = await updateUserProfileService(req.user.user_id, {
-      user_name,
-      user_surname,
-      user_email,
-      user_password,
-      user_gender,
-      user_age,
-      user_degree,
-      user_zipcode,
-    });
+    const updatedProfile = await updateUserProfileService(req.user.user_id, req.body);
     logger.info(`Perfil actualizado con éxito para usuario ID: ${req.user.user_id}`);
     return res.status(200).json(updatedProfile);
   } catch (error) {
     logger.error(`Error al actualizar el perfil del usuario ID ${req.user.user_id}: ${error.message}`);
-    if (error.message === 'Usuario no encontrado') {
-      return res.status(404).json({ msg: error.message });
-    } else {
-      return res.status(500).json({ msg: 'Error en el servidor' });
-    }
+    return res.status(500).json({ msg: error.message });
   }
 };
 

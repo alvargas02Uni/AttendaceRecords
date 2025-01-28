@@ -12,6 +12,7 @@ const registerUserService = async ({
   user_age,
   user_degree,
   user_zipcode,
+  user_isnear
 }) => {
   const { rows } = await pool.query('SELECT * FROM dep_user WHERE user_email = $1', [user_email]);
   if (rows.length > 0) {
@@ -20,11 +21,16 @@ const registerUserService = async ({
 
   const hashedPassword = await bcrypt.hash(user_password, 10);
   const { rows: newUser } = await pool.query(
-    'INSERT INTO dep_user (user_name, user_surname, user_email, user_password, user_gender, user_age, user_degree, user_zipcode, role) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-    [user_name, user_surname, user_email, hashedPassword, user_gender, user_age, user_degree, user_zipcode, 'student']
+    `INSERT INTO dep_user 
+    (user_name, user_surname, user_email, user_password, user_gender, user_age, user_degree, user_zipcode, user_isnear, created_at) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) RETURNING *`,
+    [user_name, user_surname, user_email, hashedPassword, user_gender, user_age, user_degree, user_zipcode, user_isnear || false]
   );
 
-  return generateToken(newUser[0]);
+  const user = newUser[0];
+  delete user.user_password;
+
+  return { token: generateToken(user), user };
 };
 
 // Login de usuario
@@ -34,12 +40,15 @@ const loginUserService = async (user_email, user_password) => {
     throw new Error('Credenciales inválidas');
   }
 
-  const isMatch = await bcrypt.compare(user_password, rows[0].user_password);
+  const user = rows[0];
+  const isMatch = await bcrypt.compare(user_password, user.user_password);
   if (!isMatch) {
     throw new Error('Credenciales inválidas');
   }
 
-  return generateToken(rows[0]);
+  delete user.user_password;
+
+  return { token: generateToken(user), user };
 };
 
 // Obtener perfil del usuario
@@ -49,44 +58,44 @@ const getUserProfileService = async (user_id) => {
     throw new Error('Usuario no encontrado');
   }
 
-  const { user_password, ...userProfile } = rows[0];
-  return userProfile;
+  const user = rows[0];
+  delete user.user_password;
+  
+  return user;
 };
 
 // Actualizar perfil del usuario
-const updateUserProfileService = async (user_id, {
-  user_name,
-  user_surname,
-  user_email,
-  user_password,
-  user_gender,
-  user_age,
-  user_degree,
-  user_zipcode,
-}) => {
+const updateUserProfileService = async (user_id, updates) => {
   const { rows: existingUser } = await pool.query('SELECT * FROM dep_user WHERE user_id = $1', [user_id]);
   if (existingUser.length === 0) {
     throw new Error('Usuario no encontrado');
   }
 
-  const hashedPassword = user_password ? await bcrypt.hash(user_password, 10) : undefined;
+  const hashedPassword = updates.user_password ? await bcrypt.hash(updates.user_password, 10) : undefined;
 
   const { rows } = await pool.query(
     `UPDATE dep_user SET
-    user_name = $1,
-    user_surname = $2,
-    user_email = $3,
-    user_password = COALESCE($4, user_password),
-    user_gender = $5,
-    user_age = $6,
-    user_degree = $7,
-    user_zipcode = $8
-    WHERE user_id = $9 RETURNING *`,
-    [user_name, user_surname, user_email, hashedPassword, user_gender, user_age, user_degree, user_zipcode, user_id]
+      user_name = $1,
+      user_surname = $2,
+      user_email = $3,
+      user_password = COALESCE($4, user_password),
+      user_gender = $5,
+      user_age = $6,
+      user_degree = $7,
+      user_zipcode = $8,
+      user_isnear = $9
+      WHERE user_id = $10 RETURNING *`,
+    [
+      updates.user_name, updates.user_surname, updates.user_email, hashedPassword,
+      updates.user_gender, updates.user_age, updates.user_degree, updates.user_zipcode, 
+      updates.user_isnear || false, user_id
+    ]
   );
 
-  const { user_password: _, ...updatedUserProfile } = rows[0];
-  return updatedUserProfile;
+  const updatedUser = rows[0];
+  delete updatedUser.user_password;
+
+  return updatedUser;
 };
 
 module.exports = {

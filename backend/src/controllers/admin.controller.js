@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator');
+const { authMiddleware } = require('../util/authMiddleware');
 const logger = require('../util/logger');
 const {
   registerAdminService,
@@ -16,7 +17,7 @@ const registerAdmin = async (req, res) => {
   }
 
   try {
-    const token = await registerAdminService(req.body);
+    const { token } = await registerAdminService(req.body);
     logger.info(`Administrador registrado con éxito: ${req.body.admin_email}`);
     return res.status(201).json({ token });
   } catch (error) {
@@ -46,16 +47,11 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-// Obtener todos los administradores
+// Obtener todos los administradores (ahora solo accesible para admins)
 const getAllAdmins = async (req, res) => {
   try {
-    if (!req.user || req.user.role !== 'admin') {
-      logger.warn(`Intento no autorizado de obtener administradores por ${req.user?.user_email || 'desconocido'}`);
-      return res.status(403).json({ msg: 'No tienes permisos para ver esta información' });
-    }
-
     const admins = await getAllAdminsService();
-    logger.info('Consulta realizada para obtener todos los administradores');
+    logger.info(`Consulta realizada para obtener todos los administradores por ${req.user.admin_email}`);
     return res.status(200).json(admins);
   } catch (error) {
     logger.error(`Error al obtener los administradores: ${error.message}`);

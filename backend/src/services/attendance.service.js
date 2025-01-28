@@ -11,8 +11,9 @@ const registerAttendanceService = async (user_id, lab_id) => {
     throw new Error('Ya tienes una asistencia activa en este laboratorio');
   }
 
+  // Insertar correctamente la asistencia usando att_time en lugar de att_start_time
   const { rows: newAttendance } = await pool.query(
-    'INSERT INTO attendance (user_id, lab_id) VALUES ($1, $2) RETURNING *',
+    'INSERT INTO attendance (user_id, lab_id, att_time) VALUES ($1, $2, NOW()) RETURNING *',
     [user_id, lab_id]
   );
 

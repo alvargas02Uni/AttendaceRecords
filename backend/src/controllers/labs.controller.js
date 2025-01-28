@@ -44,8 +44,9 @@ const getLabById = async (req, res) => {
   }
 };
 
-// Crear un laboratorio
+// Crear un laboratorio (solo requiere token válido, sin comprobar rol)
 const createLab = async (req, res) => {
+  // Validación de campos
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de creación de laboratorio con datos inválidos');
@@ -68,8 +69,9 @@ const createLab = async (req, res) => {
   }
 };
 
-// Actualizar un laboratorio
+// Actualizar un laboratorio (solo requiere token válido, sin comprobar rol)
 const updateLab = async (req, res) => {
+  // Validación de campos
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de actualización de laboratorio con datos inválidos');
@@ -93,8 +95,9 @@ const updateLab = async (req, res) => {
   }
 };
 
-// Eliminar un laboratorio
+// Eliminar un laboratorio (solo requiere token válido, sin comprobar rol)
 const deleteLab = async (req, res) => {
+  // Validación de campos
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     logger.warn('Intento de eliminación de laboratorio con ID no válido');

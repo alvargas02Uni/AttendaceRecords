@@ -43,7 +43,7 @@ const router = express.Router();
  *       401:
  *         description: Unauthorized
  */
-router.get('/get', authMiddleware('student'), getAllLabs);
+router.get('/get', authMiddleware, getAllLabs);
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ router.get('/get', authMiddleware('student'), getAllLabs);
  *       401:
  *         description: Unauthorized
  */
-router.get('/get/:id', authMiddleware('student'), [
+router.get('/get/:id', authMiddleware, [
   param('id').isInt().withMessage('ID must be an integer'),
 ], getLabById);
 
@@ -109,7 +109,7 @@ router.get('/get/:id', authMiddleware('student'), [
  *       401:
  *         description: Unauthorized
  */
-router.post('/create', authMiddleware('admin'), [
+router.post('/create', authMiddleware, [
   body('lab_name')
     .notEmpty()
     .withMessage('lab_name is required')
@@ -154,7 +154,7 @@ router.post('/create', authMiddleware('admin'), [
  *       404:
  *         description: Laboratory not found
  */
-router.put('/update/:id', authMiddleware('admin'), [
+router.put('/update/:id', authMiddleware, [
   param('id').isInt().withMessage('ID must be an integer'),
   body('lab_name')
     .notEmpty()
@@ -186,7 +186,7 @@ router.put('/update/:id', authMiddleware('admin'), [
  *       404:
  *         description: Laboratory not found
  */
-router.delete('/delete/:id', authMiddleware('admin'), [
+router.delete('/delete/:id', authMiddleware, [
   param('id').isInt().withMessage('ID must be an integer'),
 ], deleteLab);
 

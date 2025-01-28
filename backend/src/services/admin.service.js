@@ -15,8 +15,14 @@ const registerAdminService = async ({ admin_name, admin_surname, admin_email, ad
     [admin_name, admin_surname, admin_email, hashedPassword]
   );
 
-  const token = generateToken({ ...result.rows[0], isAdmin: true });
-  return token;
+  const adminData = { 
+    admin_id: result.rows[0].admin_id, 
+    admin_email: result.rows[0].admin_email, 
+    role: 'admin' 
+  };
+
+  const token = generateToken(adminData);
+  return { token, role: 'admin' };
 };
 
 // Login de administrador
