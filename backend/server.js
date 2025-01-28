@@ -1,4 +1,3 @@
-// Archivo: server.js
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -15,25 +14,34 @@ const adminRouter = require('./src/routes/admin.routes');
 
 const app = express();
 
-// Mostrar el valor de NODE_ENV al iniciar la aplicación
+// Detectar entorno
 const ENVIRONMENT = process.env.NODE_ENV || 'development';
 console.log(`[INFO] Application running in ${ENVIRONMENT} mode`);
 
 // Configuración de seguridad
 app.use(helmet());
+
+// Configuración de CORS
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://attendance-records-551620082303.europe-southwest1.run.app'
+];
+
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type,Authorization',
     credentials: true
 }));
 
-// Límite de tasa
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100
-});
-app.use(limiter);
+// Manejo de pre-flight requests
+app.options('*', cors());
 
 // Configuración de logs (solo en desarrollo)
 if (ENVIRONMENT !== 'production') {
@@ -51,6 +59,23 @@ if (ENVIRONMENT !== 'production') {
 
 // Análisis del cuerpo de las solicitudes entrantes en formato JSON
 app.use(express.json());
+
+// Manejo de proxy en Cloud Run para redirigir HTTP a HTTPS
+app.set('trust proxy', true);
+app.use((req, res, next) => {
+    if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+        next();
+    } else {
+        res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+});
+
+// Límite de tasa
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100
+});
+app.use(limiter);
 
 // Documentación de Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
@@ -82,7 +107,7 @@ if (ENVIRONMENT !== 'test') {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`[INFO] Server running on port ${PORT}`);
-        console.log(`[INFO] Swagger Docs available at http://localhost:${PORT}/api-docs`);
+        console.log(`[INFO] Swagger Docs available at https://attendance-records-551620082303.europe-southwest1.run.app/api-docs`);
     });
 }
 
