@@ -35,14 +35,15 @@ const registerUser = async (req, res) => {
       user_gender,
       user_age,
       user_degree,
-      user_zipcode,
+      user_zipcode
     });
+
     logger.info(`Usuario registrado con éxito: ${user_email}`);
     return res.status(201).json({ token });
   } catch (error) {
     logger.error(`Error al registrar usuario: ${error.message}`);
-    if (error.message === 'El usuario ya existe') {
-      return res.status(400).json({ msg: error.message });
+    if (error.message.includes('duplicate key value')) {
+      return res.status(400).json({ msg: 'El usuario ya existe' });
     } else {
       return res.status(500).json({ msg: 'Error en el servidor' });
     }

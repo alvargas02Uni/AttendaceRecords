@@ -1,5 +1,11 @@
 const swaggerJsdoc = require('swagger-jsdoc');
 
+const ENVIRONMENT = process.env.NODE_ENV || 'development';
+
+const serverUrls = ENVIRONMENT === 'production'
+  ? [{ url: 'https://attendance-records-551620082303.europe-southwest1.run.app/api', description: 'Cloud Run Server' }]
+  : [{ url: 'http://localhost:5000/api', description: 'Local Server' }];
+
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -16,11 +22,7 @@ const options = {
         url: 'https://opensource.org/licenses/MIT',
       },
     },
-    servers: [
-      {
-        url: 'http://localhost:5000/api', 
-      },
-    ],
+    servers: serverUrls,
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -30,9 +32,7 @@ const options = {
         },
       },
     },
-    security: [{
-      bearerAuth: [],
-    }],
+    security: [{ bearerAuth: [] }],
   },
   apis: ['./src/routes/*.js'], 
 };

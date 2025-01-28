@@ -21,7 +21,7 @@ console.log(`[INFO] Application running in ${ENVIRONMENT} mode`);
 // Configuración de seguridad
 app.use(helmet());
 
-// Configuración de CORS
+// Configuración de CORS para permitir Swagger UI en Cloud Run
 const allowedOrigins = [
     'http://localhost:3000',
     'https://attendance-records-551620082303.europe-southwest1.run.app'
@@ -29,14 +29,14 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || ENVIRONMENT === 'development') {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
     },
     methods: 'GET,POST,PUT,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization',
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 
@@ -60,24 +60,47 @@ if (ENVIRONMENT !== 'production') {
 // Análisis del cuerpo de las solicitudes entrantes en formato JSON
 app.use(express.json());
 
-// Manejo de proxy en Cloud Run para redirigir HTTP a HTTPS solo en producción
-app.set('trust proxy', true);
+// Configurar `trust proxy` correctamente en Cloud Run
+if (ENVIRONMENT === 'production') {
+    app.set('trust proxy', 1);
+}
+
+// 🔹 Middleware para evitar bloqueos de CORS en Swagger UI
 app.use((req, res, next) => {
-    if (ENVIRONMENT === 'production' && !(req.secure || req.headers['x-forwarded-proto'] === 'https')) {
-        return res.redirect(`https://${req.headers.host}${req.url}`);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    
+    // Permitir pre-flight requests
+    if (req.method === "OPTIONS") {
+        return res.status(204).end();
     }
+
     next();
 });
 
-// Límite de tasa
+// Límite de tasa con configuración para proxies
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 100, // Máximo de 100 peticiones por IP en 15 minutos
+    standardHeaders: true, // Envía los headers `RateLimit-*`
+    legacyHeaders: false, // Desactiva los headers `X-RateLimit-*`
+    keyGenerator: (req) => {
+        return req.headers['x-forwarded-for'] || req.ip; // Usa la IP real del cliente
+    }
 });
 app.use(limiter);
 
-// Documentación de Swagger (evita el redirect en `/api-docs/`)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, { explorer: true }));
+// Documentación de Swagger (corrige CORS en /api-docs/)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, {
+    explorer: true,
+    swaggerOptions: {
+        requestInterceptor: (req) => {
+            req.headers['Access-Control-Allow-Origin'] = '*';
+            return req;
+        }
+    }
+}));
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
@@ -106,7 +129,7 @@ if (ENVIRONMENT !== 'test') {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`[INFO] Server running on port ${PORT}`);
-        console.log(`[INFO] Swagger Docs available at http://localhost:${PORT}/api-docs`);
+        console.log(`[INFO] Swagger Docs available at https://attendance-records-551620082303.europe-southwest1.run.app/api-docs`);
     });
 }
 

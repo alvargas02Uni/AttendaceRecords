@@ -32,9 +32,10 @@ const registerAdmin = async (req, res) => {
 // Login de administrador
 const loginAdmin = async (req, res) => {
   try {
-    const token = await loginAdminService(req.body);
+    const { token, role } = await loginAdminService(req.body);
+    
     logger.info(`Administrador inició sesión: ${req.body.admin_email}`);
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, role }); 
   } catch (error) {
     logger.warn(`Intento fallido de login para administrador: ${req.body.admin_email}`);
     if (error.message === 'Credenciales inválidas') {
@@ -48,6 +49,11 @@ const loginAdmin = async (req, res) => {
 // Obtener todos los administradores
 const getAllAdmins = async (req, res) => {
   try {
+    if (!req.user || req.user.role !== 'admin') {
+      logger.warn(`Intento no autorizado de obtener administradores por ${req.user?.user_email || 'desconocido'}`);
+      return res.status(403).json({ msg: 'No tienes permisos para ver esta información' });
+    }
+
     const admins = await getAllAdminsService();
     logger.info('Consulta realizada para obtener todos los administradores');
     return res.status(200).json(admins);
@@ -56,6 +62,7 @@ const getAllAdmins = async (req, res) => {
     return res.status(500).json({ msg: 'Error en el servidor' });
   }
 };
+
 
 // Actualizar información de un administrador
 const updateAdmin = async (req, res) => {

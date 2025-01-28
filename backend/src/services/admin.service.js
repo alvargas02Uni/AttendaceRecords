@@ -31,8 +31,15 @@ const loginAdminService = async ({ admin_email, admin_password }) => {
     throw new Error('Credenciales inválidas');
   }
 
-  const token = generateToken({ ...rows[0], isAdmin: true });
-  return token;
+  const adminData = { 
+    admin_id: rows[0].admin_id, 
+    admin_email: rows[0].admin_email, 
+    role: 'admin'
+  };
+
+  const token = generateToken(adminData);
+  
+  return { token, role: 'admin' }; 
 };
 
 // Obtener todos los administradores
