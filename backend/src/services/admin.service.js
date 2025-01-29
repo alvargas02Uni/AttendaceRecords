@@ -22,8 +22,9 @@ const registerAdminService = async ({ admin_name, admin_surname, admin_email, ad
   };
 
   const token = generateToken(adminData);
-  return { token, role: 'admin' };
+  return { token };
 };
+
 
 // Login de administrador
 const loginAdminService = async ({ admin_email, admin_password }) => {
@@ -45,7 +46,7 @@ const loginAdminService = async ({ admin_email, admin_password }) => {
 
   const token = generateToken(adminData);
   
-  return { token, role: 'admin' }; 
+  return { token }; 
 };
 
 // Obtener todos los administradores

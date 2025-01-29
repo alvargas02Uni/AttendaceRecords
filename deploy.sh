@@ -61,6 +61,7 @@ gcloud run deploy $SERVICE_NAME \
     --set-env-vars DB_USER="postgres" \
     --set-env-vars DB_PASS="password" \
     --set-env-vars DB_NAME="AttendanceRecords_db" \
+    --set-env-vars JWT_SECRET="eiwhcue74874293gcysabcs" \
     --quiet || { log "Error en el despliegue"; exit 1; }
 
 # 8. Obtener la URL del servicio
